@@ -1,3 +1,15 @@
+# Project
+nimbus_node_manager
+nimbus_node_manager.exe
+
+# Nim cache
+nimcache
+
+# Nimble
+nimble.develop
+nimble.paths
+config.nims
+
 # Nix & Direnv
 .direnv
 result
