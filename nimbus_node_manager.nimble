@@ -11,4 +11,19 @@ bin           = @["nimbus_node_manager"]
 
 # Dependencies
 
-requires "nim >= 1.6.14"
+requires "nim >= 1.6.14",
+    "waku",
+    "libp2p#head",
+    "unittest2 == 0.2.1",
+    "confutils#head",
+    "serialization",
+    "untar",
+    "presto",
+    "stew",
+    "chronos#head",
+    "nimcrypto",
+    "eth",
+    "prompt",
+    "chronicles",
+    "metrics",
+    "https://github.com/status-im/nim-dnsdisc"

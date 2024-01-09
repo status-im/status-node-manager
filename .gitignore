@@ -7,8 +7,9 @@ nimcache
 
 # Nimble
 nimble.develop
+nimble_develop
+
 nimble.paths
-config.nims
 
 # Nix & Direnv
 .direnv
