@@ -26,3 +26,13 @@ clean-librln:
 
 # Extend clean target
 clean: | clean-librln
+
+##################
+##  WAKU UTILS  ##
+##################
+
+waku-utils: | librln
+	nim wakuUtils $(NIM_PARAMS) nimbus_node_manager.nims
+
+waku-utils-example: | librln
+	nim wakuUtilsExamples $(NIM_PARAMS) nimbus_node_manager.nims
