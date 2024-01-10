@@ -26,4 +26,5 @@ requires "nim >= 1.6.14",
     "prompt",
     "chronicles",
     "metrics",
-    "https://github.com/status-im/nim-dnsdisc"
+    "https://github.com/status-im/nim-dnsdisc",
+    "web3#428b931e7c4f1284b4272bc2c11fca2bd70991cd"
