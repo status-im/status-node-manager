@@ -16,6 +16,12 @@
             packages = [
               nim
               nimPackages.nimble
+
+              # Deps for waku
+              cargo
+              stdenv.cc
+              pkg-config
+              openssl.dev
             ];
           };
       };
