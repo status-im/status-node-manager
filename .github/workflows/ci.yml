@@ -157,7 +157,7 @@ jobs:
             NIM_COMMIT=${{ matrix.branch }} \
             NIMBLE_COMMIT=a4fc798838ee753f5485dd19afab22e9367eb0e7 \
             QUICK_AND_DIRTY_COMPILER=1 QUICK_AND_DIRTY_NIMBLE=1 CC=gcc \
-            bash build_nim.sh nim csources dist/nimble NimBinaries
+            bash build_nim.sh nim csources dist/nimble-latest NimBinaries
           echo '${{ github.workspace }}/nim/bin' >> $GITHUB_PATH
 
       - name: Run tests
