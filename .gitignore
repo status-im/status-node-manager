@@ -1,6 +1,6 @@
 # Project
-nimbus_node_manager
-nimbus_node_manager.exe
+status_node_manager
+status_node_manager.exe
 
 # Nim cache
 nimcache

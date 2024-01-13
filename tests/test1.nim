@@ -7,6 +7,6 @@
 
 import unittest
 
-import nimbus_node_managerpkg/submodule
+import status_node_manager/submodule
 test "correct welcome":
   check getWelcomeMessage() == "Hello, World!"

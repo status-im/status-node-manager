@@ -9,3 +9,4 @@ when withDir(thisDir(), system.fileExists("nimble.paths")):
 --excessiveStackTrace:on
 # enable metric collection
 --define:metrics
+--path:"src"

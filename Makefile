@@ -32,7 +32,7 @@ clean: | clean-librln
 ##################
 
 waku-utils: | librln
-	nim wakuUtils $(NIM_PARAMS) nimbus_node_manager.nims
+	nim wakuUtils $(NIM_PARAMS) status_node_manager.nims
 
 waku-utils-example: | librln
-	nim wakuUtilsExamples $(NIM_PARAMS) nimbus_node_manager.nims
+	nim wakuUtilsExamples $(NIM_PARAMS) status_node_manager.nims
