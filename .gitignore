@@ -1,6 +1,7 @@
 # Project
 status_node_manager
 status_node_manager.exe
+status_node_manager.out
 
 # Nim cache
 nimcache
