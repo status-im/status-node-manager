@@ -1,6 +1,26 @@
 {
   "version": 2,
   "packages": {
+    "untar": {
+      "version": "0.1.0",
+      "vcsRevision": "b49f6ac94974fe11cb3d396a8a9c533824a497a7",
+      "url": "https://github.com/dom96/untar",
+      "downloadMethod": "git",
+      "dependencies": [],
+      "checksums": {
+        "sha1": "ceb12634783156ddd511410242dc7855ae2f4a14"
+      }
+    },
+    "results": {
+      "version": "0.4.0",
+      "vcsRevision": "f3c666a272c69d70cb41e7245e7f6844797303ad",
+      "url": "https://github.com/arnetheduck/nim-results.git",
+      "downloadMethod": "git",
+      "dependencies": [],
+      "checksums": {
+        "sha1": "51e08ca9524db98dc909fb39192272cc2b5451c7"
+      }
+    },
     "unittest2": {
       "version": "0.2.1",
       "vcsRevision": "262b697f38d6b6f1e7462d3b3ab81d79b894e336",
@@ -9,6 +29,41 @@
       "dependencies": [],
       "checksums": {
         "sha1": "1bac3a8355441edeed1ef3134e7436d6fb5d4498"
+      }
+    },
+    "stew": {
+      "version": "0.1.0",
+      "vcsRevision": "2c2544aec13536304438be045bfdd22452741466",
+      "url": "https://github.com/status-im/nim-stew.git",
+      "downloadMethod": "git",
+      "dependencies": [
+        "results",
+        "unittest2"
+      ],
+      "checksums": {
+        "sha1": "0d3c4f15a4cff934ec30e5b2d5fe590922839a4e"
+      }
+    },
+    "nimcrypto": {
+      "version": "0.6.0",
+      "vcsRevision": "a079df92424968d46a6ac258299ce9380aa153f2",
+      "url": "https://github.com/cheatfate/nimcrypto.git",
+      "downloadMethod": "git",
+      "dependencies": [],
+      "checksums": {
+        "sha1": "be9a4654dd5839b97f39d5060d98f18ba868623c"
+      }
+    },
+    "stint": {
+      "version": "2.0.0",
+      "vcsRevision": "711cda4456c32d3ba3c6c4524135b3453dffeb9c",
+      "url": "https://github.com/status-im/nim-stint.git",
+      "downloadMethod": "git",
+      "dependencies": [
+        "stew"
+      ],
+      "checksums": {
+        "sha1": "432d8fa883c807932fc78ecd33fc944637e2d328"
       }
     },
     "bearssl": {
@@ -23,6 +78,35 @@
         "sha1": "5327c983483c4dd465347c6b8a974239c7c6c612"
       }
     },
+    "httputils": {
+      "version": "0.3.0",
+      "vcsRevision": "77a59297ad635d91a6352ef48ee09c6bde0c5d86",
+      "url": "https://github.com/status-im/nim-http-utils.git",
+      "downloadMethod": "git",
+      "dependencies": [
+        "stew",
+        "unittest2"
+      ],
+      "checksums": {
+        "sha1": "f53480dd7ed0ac9b3ca7972f8b5e0f1862ce99ac"
+      }
+    },
+    "chronos": {
+      "version": "3.2.0",
+      "vcsRevision": "41f77d261ead2508acdd3bd3f88a5cbbcefff05f",
+      "url": "https://github.com/status-im/nim-chronos.git",
+      "downloadMethod": "git",
+      "dependencies": [
+        "results",
+        "stew",
+        "bearssl",
+        "httputils",
+        "unittest2"
+      ],
+      "checksums": {
+        "sha1": "f2bce72e6408be30da7b098d9d4e20fe6abc1ff8"
+      }
+    },
     "testutils": {
       "version": "0.5.0",
       "vcsRevision": "b56a5953e37fc5117bd6ea6dfa18418c5e112815",
@@ -33,29 +117,6 @@
       ],
       "checksums": {
         "sha1": "5969947aac865bacf9487b5fb5c33e4a59463f0f"
-      }
-    },
-    "results": {
-      "version": "0.4.0",
-      "vcsRevision": "f3c666a272c69d70cb41e7245e7f6844797303ad",
-      "url": "https://github.com/arnetheduck/nim-results.git",
-      "downloadMethod": "git",
-      "dependencies": [],
-      "checksums": {
-        "sha1": "51e08ca9524db98dc909fb39192272cc2b5451c7"
-      }
-    },
-    "stew": {
-      "version": "0.1.0",
-      "vcsRevision": "2c2544aec13536304438be045bfdd22452741466",
-      "url": "https://github.com/status-im/nim-stew.git",
-      "downloadMethod": "git",
-      "dependencies": [
-        "results",
-        "unittest2"
-      ],
-      "checksums": {
-        "sha1": "0d3c4f15a4cff934ec30e5b2d5fe590922839a4e"
       }
     },
     "faststreams": {
@@ -111,61 +172,109 @@
         "sha1": "09ae5c46be94aa60d2b0ca80c215a142f94e3603"
       }
     },
-    "httputils": {
-      "version": "0.3.0",
-      "vcsRevision": "77a59297ad635d91a6352ef48ee09c6bde0c5d86",
-      "url": "https://github.com/status-im/nim-http-utils.git",
-      "downloadMethod": "git",
-      "dependencies": [
-        "stew",
-        "unittest2"
-      ],
-      "checksums": {
-        "sha1": "f53480dd7ed0ac9b3ca7972f8b5e0f1862ce99ac"
-      }
-    },
-    "chronos": {
-      "version": "3.2.0",
-      "vcsRevision": "41f77d261ead2508acdd3bd3f88a5cbbcefff05f",
-      "url": "https://github.com/status-im/nim-chronos.git",
-      "downloadMethod": "git",
-      "dependencies": [
-        "results",
-        "stew",
-        "bearssl",
-        "httputils",
-        "unittest2"
-      ],
-      "checksums": {
-        "sha1": "f2bce72e6408be30da7b098d9d4e20fe6abc1ff8"
-      }
-    },
-    "nimcrypto": {
-      "version": "0.6.0",
-      "vcsRevision": "a079df92424968d46a6ac258299ce9380aa153f2",
-      "url": "https://github.com/cheatfate/nimcrypto.git",
-      "downloadMethod": "git",
-      "dependencies": [],
-      "checksums": {
-        "sha1": "be9a4654dd5839b97f39d5060d98f18ba868623c"
-      }
-    },
-    "stint": {
-      "version": "2.0.0",
-      "vcsRevision": "711cda4456c32d3ba3c6c4524135b3453dffeb9c",
-      "url": "https://github.com/status-im/nim-stint.git",
+    "zlib": {
+      "version": "0.1.0",
+      "vcsRevision": "a2f44bb7f65571a894227ff6fde9298a104e03a5",
+      "url": "https://github.com/status-im/nim-zlib.git",
       "downloadMethod": "git",
       "dependencies": [
         "stew"
       ],
       "checksums": {
-        "sha1": "432d8fa883c807932fc78ecd33fc944637e2d328"
+        "sha1": "edbf76ebdecb63d302d1883fe4b23b2eb0608cb7"
+      }
+    },
+    "websock": {
+      "version": "0.1.0",
+      "vcsRevision": "f8ed9b40a5ff27ad02a3c237c4905b0924e3f982",
+      "url": "https://github.com/status-im/nim-websock.git",
+      "downloadMethod": "git",
+      "dependencies": [
+        "chronos",
+        "httputils",
+        "chronicles",
+        "stew",
+        "nimcrypto",
+        "bearssl",
+        "zlib"
+      ],
+      "checksums": {
+        "sha1": "94f836ae589056b2deb04bdfdcd614fff80adaf5"
+      }
+    },
+    "json_rpc": {
+      "version": "0.0.2",
+      "vcsRevision": "33360528d208aaa70a6ed914619fe76321760d54",
+      "url": "https://github.com/status-im/nim-json-rpc.git",
+      "downloadMethod": "git",
+      "dependencies": [
+        "stew",
+        "nimcrypto",
+        "stint",
+        "chronos",
+        "httputils",
+        "chronicles",
+        "websock",
+        "json_serialization",
+        "unittest2"
+      ],
+      "checksums": {
+        "sha1": "406939eb32c7ff783e2e54469adab65169685fde"
+      }
+    },
+    "metrics": {
+      "version": "0.0.1",
+      "vcsRevision": "51f1227d0fd04ce84b1ef784b11280cb7875348c",
+      "url": "https://github.com/status-im/nim-metrics.git",
+      "downloadMethod": "git",
+      "dependencies": [
+        "chronos"
+      ],
+      "checksums": {
+        "sha1": "948aaca1763c838a7752251bab9a8bcfda66acfe"
+      }
+    },
+    "presto": {
+      "version": "0.0.4",
+      "vcsRevision": "5ca16485e4d74e531d50d289ebc0f869d9e6352b",
+      "url": "https://github.com/status-im/nim-presto.git",
+      "downloadMethod": "git",
+      "dependencies": [
+        "chronos",
+        "chronicles",
+        "metrics",
+        "stew"
+      ],
+      "checksums": {
+        "sha1": "ffd1784043d27b5afe6e9cb449f7afcd5f916d20"
+      }
+    },
+    "unicodedb": {
+      "version": "0.12.0",
+      "vcsRevision": "04a154eee0b8a2ad313e24ba46a4e5b4e0b9036f",
+      "url": "https://github.com/nitely/nim-unicodedb.git",
+      "downloadMethod": "git",
+      "dependencies": [],
+      "checksums": {
+        "sha1": "1ca99e49239b8d2d259f0776bcb10dc1315518f8"
+      }
+    },
+    "prompt": {
+      "version": "0.0.1",
+      "vcsRevision": "b0ea27c34ca7aaee42333541f37b182fa239c844",
+      "url": "https://github.com/surf1nb1rd/nim-prompt",
+      "downloadMethod": "git",
+      "dependencies": [
+        "unicodedb"
+      ],
+      "checksums": {
+        "sha1": "e5c5a97df2c9950edbd0f8f5d9afc7cb57c0d9f2"
       }
     },
     "secp256k1": {
       "version": "0.6.0.3.2",
       "vcsRevision": "7246d91c667f4cc3759fdd50339caa45a2ecd8be",
-      "url": "https://github.com/status-im/nim-secp256k1",
+      "url": "https://github.com/status-im/nim-secp256k1.git",
       "downloadMethod": "git",
       "dependencies": [
         "stew",
@@ -185,18 +294,6 @@
       ],
       "checksums": {
         "sha1": "c3388d325ca7757ed0faf79765ca5996ac1435a3"
-      }
-    },
-    "metrics": {
-      "version": "0.0.1",
-      "vcsRevision": "51f1227d0fd04ce84b1ef784b11280cb7875348c",
-      "url": "https://github.com/status-im/nim-metrics.git",
-      "downloadMethod": "git",
-      "dependencies": [
-        "chronos"
-      ],
-      "checksums": {
-        "sha1": "948aaca1763c838a7752251bab9a8bcfda66acfe"
       }
     },
     "sqlite3_abi": {
@@ -245,9 +342,39 @@
         "sha1": "08c4ce59941aced7ac6ed9d8abb99cdc0d73c5d3"
       }
     },
+    "web3": {
+      "version": "0.0.1",
+      "vcsRevision": "428b931e7c4f1284b4272bc2c11fca2bd70991cd",
+      "url": "https://github.com/status-im/nim-web3.git",
+      "downloadMethod": "git",
+      "dependencies": [
+        "chronicles",
+        "chronos",
+        "eth",
+        "faststreams",
+        "json_rpc",
+        "json_serialization",
+        "nimcrypto",
+        "stew",
+        "stint"
+      ],
+      "checksums": {
+        "sha1": "ecf895899846b8e01a6ef995aa6844e89bd068ad"
+      }
+    },
+    "dnsclient": {
+      "version": "0.3.4",
+      "vcsRevision": "23214235d4784d24aceed99bbfe153379ea557c8",
+      "url": "https://github.com/ba0f3/dnsclient.nim.git",
+      "downloadMethod": "git",
+      "dependencies": [],
+      "checksums": {
+        "sha1": "65262c7e533ff49d6aca5539da4bc6c6ce132f40"
+      }
+    },
     "dnsdisc": {
       "version": "0.1.0",
-      "vcsRevision": "302dfde46fa72a4e0de58a3dbdf54f5a77350816",
+      "vcsRevision": "c138792c9385208626a005ffa0833101760b0da5",
       "url": "https://github.com/status-im/nim-dnsdisc",
       "downloadMethod": "git",
       "dependencies": [
@@ -263,7 +390,19 @@
         "results"
       ],
       "checksums": {
-        "sha1": "b47e8617b6f14a8d55d0a7b82f7778b6ff5ea2a2"
+        "sha1": "42d925187ef35eb3e9370ceb72a1976374616c62"
+      }
+    },
+    "regex": {
+      "version": "0.23.0",
+      "vcsRevision": "577c4ec3b235c5fd2653a9c86cbc4a576cfc0869",
+      "url": "https://github.com/nitely/nim-regex.git",
+      "downloadMethod": "git",
+      "dependencies": [
+        "unicodedb"
+      ],
+      "checksums": {
+        "sha1": "89466caa353b571cdcd8271f2c797ba2c15a89f2"
       }
     },
     "libbacktrace": {
@@ -274,46 +413,6 @@
       "dependencies": [],
       "checksums": {
         "sha1": "fec37613a1903b61a81cb750b3ab99fb567ff77b"
-      }
-    },
-    "dnsclient": {
-      "version": "0.3.4",
-      "vcsRevision": "23214235d4784d24aceed99bbfe153379ea557c8",
-      "url": "https://github.com/ba0f3/dnsclient.nim",
-      "downloadMethod": "git",
-      "dependencies": [],
-      "checksums": {
-        "sha1": "65262c7e533ff49d6aca5539da4bc6c6ce132f40"
-      }
-    },
-    "zlib": {
-      "version": "0.1.0",
-      "vcsRevision": "a2f44bb7f65571a894227ff6fde9298a104e03a5",
-      "url": "https://github.com/status-im/nim-zlib.git",
-      "downloadMethod": "git",
-      "dependencies": [
-        "stew"
-      ],
-      "checksums": {
-        "sha1": "edbf76ebdecb63d302d1883fe4b23b2eb0608cb7"
-      }
-    },
-    "websock": {
-      "version": "0.1.0",
-      "vcsRevision": "f8ed9b40a5ff27ad02a3c237c4905b0924e3f982",
-      "url": "https://github.com/status-im/nim-websock.git",
-      "downloadMethod": "git",
-      "dependencies": [
-        "chronos",
-        "httputils",
-        "chronicles",
-        "stew",
-        "nimcrypto",
-        "bearssl",
-        "zlib"
-      ],
-      "checksums": {
-        "sha1": "94f836ae589056b2deb04bdfdcd614fff80adaf5"
       }
     },
     "libp2p": {
@@ -337,109 +436,10 @@
         "sha1": "fbc9aef1a5d8e9cc79fed0328266eacc0339de47"
       }
     },
-    "json_rpc": {
-      "version": "0.0.2",
-      "vcsRevision": "33360528d208aaa70a6ed914619fe76321760d54",
-      "url": "https://github.com/status-im/nim-json-rpc.git",
-      "downloadMethod": "git",
-      "dependencies": [
-        "stew",
-        "nimcrypto",
-        "stint",
-        "chronos",
-        "httputils",
-        "chronicles",
-        "websock",
-        "json_serialization",
-        "unittest2"
-      ],
-      "checksums": {
-        "sha1": "406939eb32c7ff783e2e54469adab65169685fde"
-      }
-    },
-    "web3": {
-      "version": "0.0.1",
-      "vcsRevision": "428b931e7c4f1284b4272bc2c11fca2bd70991cd",
-      "url": "https://github.com/status-im/nim-web3.git",
-      "downloadMethod": "git",
-      "dependencies": [
-        "chronicles",
-        "chronos",
-        "eth",
-        "faststreams",
-        "json_rpc",
-        "json_serialization",
-        "nimcrypto",
-        "stew",
-        "stint"
-      ],
-      "checksums": {
-        "sha1": "ecf895899846b8e01a6ef995aa6844e89bd068ad"
-      }
-    },
-    "presto": {
-      "version": "0.0.4",
-      "vcsRevision": "5ca16485e4d74e531d50d289ebc0f869d9e6352b",
-      "url": "https://github.com/status-im/nim-presto.git",
-      "downloadMethod": "git",
-      "dependencies": [
-        "chronos",
-        "chronicles",
-        "metrics",
-        "stew"
-      ],
-      "checksums": {
-        "sha1": "ffd1784043d27b5afe6e9cb449f7afcd5f916d20"
-      }
-    },
-    "unicodedb": {
-      "version": "0.12.0",
-      "vcsRevision": "04a154eee0b8a2ad313e24ba46a4e5b4e0b9036f",
-      "url": "https://github.com/nitely/nim-unicodedb.git",
-      "downloadMethod": "git",
-      "dependencies": [],
-      "checksums": {
-        "sha1": "1ca99e49239b8d2d259f0776bcb10dc1315518f8"
-      }
-    },
-    "prompt": {
-      "version": "0.0.1",
-      "vcsRevision": "b0ea27c34ca7aaee42333541f37b182fa239c844",
-      "url": "https://github.com/surf1nb1rd/nim-prompt",
-      "downloadMethod": "git",
-      "dependencies": [
-        "unicodedb"
-      ],
-      "checksums": {
-        "sha1": "e5c5a97df2c9950edbd0f8f5d9afc7cb57c0d9f2"
-      }
-    },
-    "untar": {
-      "version": "0.1.0",
-      "vcsRevision": "b49f6ac94974fe11cb3d396a8a9c533824a497a7",
-      "url": "https://github.com/dom96/untar",
-      "downloadMethod": "git",
-      "dependencies": [],
-      "checksums": {
-        "sha1": "ceb12634783156ddd511410242dc7855ae2f4a14"
-      }
-    },
-    "regex": {
-      "version": "0.23.0",
-      "vcsRevision": "577c4ec3b235c5fd2653a9c86cbc4a576cfc0869",
-      "url": "https://github.com/nitely/nim-regex.git",
-      "downloadMethod": "git",
-      "dependencies": [
-        "unicodedb"
-      ],
-      "checksums": {
-        "sha1": "89466caa353b571cdcd8271f2c797ba2c15a89f2"
-      }
-    },
     "waku": {
       "version": "0.1.0",
-      "vcsRevision": "2ec589a795fd1ab1dae5e87f4456e35832e120e5",
-      "url": "git@github.com:waku-org/nwaku.git",
+      "vcsRevision": "3d816c08145cf62221496c0e78cce865f06f5e40",
+      "url": "https://github.com/waku-org/nwaku",
       "downloadMethod": "git",
       "dependencies": [
         "chronicles",
@@ -458,7 +458,7 @@
         "regex"
       ],
       "checksums": {
-        "sha1": "0e19c5dbc63ef0613d256ba98ad4ae48401a76de"
+        "sha1": "43d12b3c1bf9078536b0355f3d11e46e7bdc55a7"
       }
     }
   },
