@@ -163,7 +163,7 @@ proc prepareHandShakeMsg*(rng: ref HmacDrbgContext,
   # <- sB, eAsB    {r} #      # -> sA, sAeB, sAsB  {s} #
   ######################      ##########################
 
-  notice "Setting up agent and preparing handshake message for step:", step = step
+  notice "Preparing handshake message for step:", step = step
   let transportMessage = agentInfo.commitment
   agentStep = stepHandshake(rng[], agentHS,
                             transportMessage = transportMessage,
@@ -205,3 +205,50 @@ proc handleHandShakeMsg*(rng: ref HmacDrbgContext,
                                messageNametag = initiatorMessageNametag).get()
   initiatorMessageNametag = toMessageNametag(initiatorHS)
 
+proc initiatorHandshake*(rng: ref HmacDrbgContext, node: WakuNode,
+    pubSubTopic: PubsubTopic, contentTopic: ContentTopic, qr: string,
+    qrMessageNameTag: seq[byte], initiatorInfo: AgentKeysAndCommitment
+   ): Future[HandshakeResult] {.async.} =
+  var
+    readyForFinalization = false
+
+    initiatorMessageNametag: MessageNametag
+    initiatorStep: HandshakeStepResult
+    initiatorHS: HandshakeState = initHS(initiatorInfo, qr, true)
+
+    initiatorHSResult: HandshakeResult
+
+  let initialMessage =
+    prepareHandShakeInitiatorMsg(rng, contentTopic, initiatorInfo,
+        qrMessageNameTag, initiatorMessageNametag, initiatorHS, initiatorStep)
+
+  proc initiatorHandshakeHandler(topic: PubsubTopic, msg: WakuMessage): Future[
+      void] {.async.} =
+    if msg.contentTopic == contentTopic:
+      let readPayloadV2 = decodePayloadV2(msg).get()
+      if readPayloadV2.messageNametag == initiatorMessageNametag:
+        handleHandShakeMsg(rng, pubSubTopic, contentTopic, step = 2,
+            readPayloadV2, initiatorStep, initiatorHS, initiatorMessageNametag)
+
+        let handShakeMsgStep3 = prepareHandShakeMsg(rng, contentTopic,
+            initiatorInfo, initiatorMessageNametag, initiatorHS, initiatorStep, step = 3)
+        await publishHandShakeMsg(node, pubSubTopic, contentTopic,
+            handShakeMsgStep3.get(), 3)
+        readyForFinalization = true
+
+  node.subscribe((kind: PubsubSub, topic: pubsubTopic), some(initiatorHandshakeHandler))
+
+  await publishHandShakeInitiatorMsg(node, pubSubTopic, contentTopic,
+      initialMessage.get())
+
+  while true:
+    if readyForFinalization:
+      node.unsubscribe((kind: PubsubSub, topic: pubsubTopic))
+
+      notice "Finalizing handshake"
+      initiatorHSResult = finalizeHandshake(initiatorHS)
+      notice "Handshake finalized successfully"
+      break
+    await sleepAsync(2000)
+
+  return initiatorHSResult
