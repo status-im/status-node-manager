@@ -95,7 +95,7 @@ proc prepareHandShakeInitiatorMsg*(rng: ref HmacDrbgContext,
 
   # The messageNametag for the first handshake message is randomly generated
   # and exchanged out-of-band and corresponds to qrMessageNametag
-  # We set the transport message to be H(sA||s)
+
   let transportMessage = digestToSeq(agentInfo.committedStaticKey)
 
   # By being the handshake initiator, this agent writes a Waku2 payload v2
@@ -126,7 +126,6 @@ proc publishHandShakeInitiatorMsg*(node: WakuNode,
          psTopic = pubSubTopic,
          contentTopic = contentTopic,
          payload = message.payload
-  await sleepAsync(5000)
 
 proc handleHandShakeInitiatorMsg*(rng: ref HmacDrbgContext,
                                   pubSubTopic: PubsubTopic,
@@ -165,8 +164,7 @@ proc prepareHandShakeMsg*(rng: ref HmacDrbgContext,
   ######################      ##########################
 
   notice "Setting up agent and preparing handshake message for step:", step = step
-  let transportMessage = digestToSeq(agentInfo.committedStaticKey)
-
+  let transportMessage = agentInfo.commitment
   agentStep = stepHandshake(rng[], agentHS,
                             transportMessage = transportMessage,
                             messageNametag = agentMessageNametag).get()
@@ -183,7 +181,6 @@ proc publishHandShakeMsg*(node: WakuNode,
                           message: WakuMessage,
                           step: int) {.async.} =
   notice "Publishing handshake message for step:", step = step
-  await sleepAsync(5000)
   await node.publish(some(pubSubTopic), message)
   notice "Published handshake message for step:", step = step,
          psTopic = pubSubTopic,
