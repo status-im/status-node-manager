@@ -11,9 +11,9 @@ when withDir(thisDir(), system.fileExists("nimble.paths")):
 # Configuration synced with nwaku's - https://github.com/waku-org/nwaku/blob/master/config.nims
 # ---------------------------------------------------- nwaku config ----------------------------------------------------
 if defined(release):
-  switch("nimcache", "nimcache/release/$projectName")
+  switch("nimcache", thisDir() & "/nimcache/release/$projectName")
 else:
-  switch("nimcache", "nimcache/debug/$projectName")
+  switch("nimcache", thisDir() & "/nimcache/debug/$projectName")
 
 if defined(windows):
   # disable timestamps in Windows PE headers - https://wiki.debian.org/ReproducibleBuilds/TimestampsInPEBinaries
