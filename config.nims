@@ -104,3 +104,8 @@ switch("warning", "LockLevel:off")
 
 # Discovery configuration
 switch("define", "discv5_protocol_id=d5waku")
+
+# Logging configuration
+--define:chronicles_line_numbers
+switch("define", "chronicles_log_level=DEBUG")
+switch("define", "chronicles_runtime_filtering=on")
