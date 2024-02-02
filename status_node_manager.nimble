@@ -26,4 +26,5 @@ requires "nim >= 1.6.14",
     "chronicles",
     "metrics",
     "dnsdisc",
-    "web3"
+    "web3",
+    "libbacktrace"
