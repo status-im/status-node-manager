@@ -11,6 +11,33 @@ ifeq ($(V), 0)
 endif
 
 ##################
+## Dependencies ##
+##################
+.PHONY: deps libbacktrace
+
+### nim-libbacktrace
+
+# "-d:release" implies "--stacktrace:off" and it cannot be added to config.nims
+ifeq ($(USE_LIBBACKTRACE), 0)
+NIM_PARAMS := $(NIM_PARAMS) -d:debug -d:disable_libbacktrace
+else
+NIM_PARAMS := $(NIM_PARAMS) -d:release
+endif
+
+libbacktrace:
+	+ $(MAKE) -C nimble_develop/nim-libbacktrace --no-print-directory BUILD_CXX_LIB=0
+
+clean-libbacktrace:
+	+ $(MAKE) -C nimble_develop/nim-libbacktrace clean $(HANDLE_OUTPUT)
+
+# Extend deps and clean targets
+ifneq ($(USE_LIBBACKTRACE), 0)
+deps: | libbacktrace
+endif
+
+clean: | clean-libbacktrace
+
+##################
 ##     RLN      ##
 ##################
 .PHONY: librln
@@ -43,8 +70,8 @@ clean: | clean-librln
 ##  WAKU UTILS  ##
 ##################
 
-waku-utils: | librln
+waku-utils: | deps librln
 	nim wakuUtils $(NIM_PARAMS) status_node_manager.nims
 
-waku-utils-example: | librln
+waku-utils-example: | deps librln
 	nim wakuUtilsExamples $(NIM_PARAMS) status_node_manager.nims
