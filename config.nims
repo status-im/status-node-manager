@@ -5,6 +5,9 @@ when withDir(thisDir(), system.fileExists("nimble.paths")):
 
 --path:"src"
 
+# Turn off `libbacktrace`
+--define:disable_libbacktrace
+
 # Configuration synced with nwaku's - https://github.com/waku-org/nwaku/blob/master/config.nims
 # ---------------------------------------------------- nwaku config ----------------------------------------------------
 if defined(release):
@@ -84,11 +87,6 @@ switch("define", "withoutPCRE")
 if not defined(macosx):
   # add debugging symbols and original files and line numbers
   --debugger:native
-  if not (defined(windows) and defined(i386)) and not defined(disable_libbacktrace):
-    # light-weight stack traces using libbacktrace and libunwind
-    --define:nimStackTraceOverride
-    switch("import", "libbacktrace")
-
 --define:nimOldCaseObjects # https://github.com/status-im/nim-confutils/issues/9
 
 # `switch("warning[CaseTransition]", "off")` fails with "Error: invalid command line option: '--warning[CaseTransition]'"
