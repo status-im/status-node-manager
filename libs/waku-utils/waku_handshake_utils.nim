@@ -1,27 +1,12 @@
 import
-  std/[tables, sequtils],
-  stew/byteutils,
-  stew/shims/net,
-  chronicles,
-  chronos,
-  confutils,
-  libp2p/crypto/crypto,
-  eth/keys,
-  eth/p2p/discoveryv5/enr
+  stew/[byteutils], chronicles, chronos, confutils
 
 import
-  waku/common/logging,
-  waku/node/peer_manager,
-  waku/waku_core,
-  waku/waku_node,
-  waku/waku_enr,
-  waku/waku_discv5,
-  waku/common/protobuf,
-  waku/utils/noise as waku_message_utils,
-  waku/waku_noise/noise_types,
-  waku/waku_noise/noise_utils,
-  waku/waku_noise/noise_handshake_processing,
-  waku/waku_core
+  waku/waku_noise/[noise_types, noise_utils, noise_handshake_processing],
+  waku/utils/noise,
+  waku/[waku_core, waku_node],
+  waku/common/[logging, protobuf],
+  waku/node/peer_manager
 
 type
   AgentKeysAndCommitment* = object
@@ -35,33 +20,34 @@ type
     applicationVersion*: string
     shardId*: string
 
-proc initAgentKeysAndCommitment* (rng: ref HmacDrbgContext): AgentKeysAndCommitment =
+proc initAgentKeysAndCommitment*(rng: ref HmacDrbgContext): AgentKeysAndCommitment =
   let staticKey = genKeyPair(rng[])
-  let commitment= randomSeqByte(rng[], 32)
-  AgentKeysAndCommitment(
-    staticKey: staticKey,
-    ephemeralKey: genKeyPair(rng[]),
-    commitment: commitment,
-    committedStaticKey: commitPublicKey(getPublicKey(staticKey), commitment))
+  let commitment = randomSeqByte(rng[], 32)
+  AgentKeysAndCommitment(staticKey: staticKey,
+                         ephemeralKey: genKeyPair(rng[]),
+                         commitment: commitment,
+                         committedStaticKey:
+                            commitPublicKey(getPublicKey(staticKey), commitment))
 
 proc initQr*(rng: ref HmacDrbgContext, contentTopicInfo: ContentTopicInfo,
-    agentInfo: AgentKeysAndCommitment): tuple[qr: string, qrMessageNametag: seq[byte]] =
-  let qr = toQr(
-    contentTopicInfo.applicationName,
-    contentTopicInfo.applicationVersion,
-    contentTopicInfo.shardId,
-    getPublicKey(agentInfo.ephemeralKey),
-    agentInfo.committedStaticKey)
+             agentInfo: AgentKeysAndCommitment
+    ): tuple[qr: string, qrMessageNametag: seq[byte]] =
+  let qr = toQr(contentTopicInfo.applicationName,
+                contentTopicInfo.applicationVersion,
+                contentTopicInfo.shardId,
+                getPublicKey(agentInfo.ephemeralKey),
+                agentInfo.committedStaticKey)
 
   let qrMessageNametag = randomSeqByte(rng[], MessageNametagLength)
 
   (qr, qrMessageNametag)
 
-proc initContentTopicFromQr* (qr: string): ContentTopic =
+proc initContentTopicFromQr*(qr: string): ContentTopic =
   let (readApplicationName, readApplicationVersion, readShardId, _, _) = fromQr(qr)
 
   let contentTopic = "/" & readApplicationName & "/" &
-    readApplicationVersion & "/wakunoise/1/sessions_shard-" & readShardId & "/proto"
+                     readApplicationVersion & "/wakunoise/1/sessions_shard-" &
+                     readShardId & "/proto"
   return contentTopic
 
 proc initHS*(agentInfo: AgentKeysAndCommitment, qr: string,
@@ -79,12 +65,12 @@ proc initHS*(agentInfo: AgentKeysAndCommitment, qr: string,
              initiator = isInitiator)
 
 proc prepareHandShakeInitiatorMsg*(rng: ref HmacDrbgContext,
-                                contentTopic: string,
-                                agentInfo: AgentKeysAndCommitment,
-                                qrMessageNametag: seq[byte],
-                                agentMessageNametag: var MessageNametag,
-                                agentHS: var HandshakeState,
-                                initiatorStep: var HandshakeStepResult
+                                   contentTopic: string,
+                                   agentInfo: AgentKeysAndCommitment,
+                                   qrMessageNametag: seq[byte],
+                                   agentMessageNametag: var MessageNametag,
+                                   agentHS: var HandshakeState,
+                                   initiatorStep: var HandshakeStepResult
     ): Result[WakuMessage, cstring] =
 
   ##############################
@@ -102,7 +88,8 @@ proc prepareHandShakeInitiatorMsg*(rng: ref HmacDrbgContext,
   # containing  handshake message and the (encrypted) transport message
   # The message is sent with a messageNametag equal to the one received through
   # the QR code
-  initiatorStep = stepHandshake(rng[], agentHS, transportMessage = transportMessage,
+  initiatorStep = stepHandshake(rng[], agentHS,
+                                transportMessage = transportMessage,
                                 messageNametag = qrMessageNametag).get()
 
   # We prepare a Waku message from the initiators's payload2
@@ -201,14 +188,16 @@ proc handleHandShakeMsg*(rng: ref HmacDrbgContext,
          payload = payload
   notice "Handling handshake message for step:", step = step
   initiatorStep = stepHandshake(rng[], initiatorHS,
-                               readPayloadV2 = payload,
-                               messageNametag = initiatorMessageNametag).get()
+                                readPayloadV2 = payload,
+                                messageNametag = initiatorMessageNametag).get()
   initiatorMessageNametag = toMessageNametag(initiatorHS)
 
 proc initiatorHandshake*(rng: ref HmacDrbgContext, node: WakuNode,
-    pubSubTopic: PubsubTopic, contentTopic: ContentTopic, qr: string,
-    qrMessageNameTag: seq[byte], initiatorInfo: AgentKeysAndCommitment
-   ): Future[HandshakeResult] {.async.} =
+                         pubSubTopic: PubsubTopic,
+                         contentTopic: ContentTopic,
+                         qr: string, qrMessageNameTag: seq[byte],
+                         initiatorInfo: AgentKeysAndCommitment
+    ): Future[HandshakeResult] {.async.} =
   var
     readyForFinalization = false
 
@@ -220,7 +209,8 @@ proc initiatorHandshake*(rng: ref HmacDrbgContext, node: WakuNode,
 
   let initialMessage =
     prepareHandShakeInitiatorMsg(rng, contentTopic, initiatorInfo,
-        qrMessageNameTag, initiatorMessageNametag, initiatorHS, initiatorStep)
+                                 qrMessageNameTag, initiatorMessageNametag,
+                                 initiatorHS, initiatorStep)
 
   proc initiatorHandshakeHandler(topic: PubsubTopic, msg: WakuMessage): Future[
       void] {.async.} =
@@ -228,18 +218,23 @@ proc initiatorHandshake*(rng: ref HmacDrbgContext, node: WakuNode,
       let readPayloadV2 = decodePayloadV2(msg).get()
       if readPayloadV2.messageNametag == initiatorMessageNametag:
         handleHandShakeMsg(rng, pubSubTopic, contentTopic, step = 2,
-            readPayloadV2, initiatorStep, initiatorHS, initiatorMessageNametag)
+                           readPayloadV2, initiatorStep, initiatorHS,
+                           initiatorMessageNametag)
 
         let handShakeMsgStep3 = prepareHandShakeMsg(rng, contentTopic,
-            initiatorInfo, initiatorMessageNametag, initiatorHS, initiatorStep, step = 3)
+                                                    initiatorInfo,
+                                                    initiatorMessageNametag,
+                                                    initiatorHS,
+                                                    initiatorStep, step = 3)
         await publishHandShakeMsg(node, pubSubTopic, contentTopic,
-            handShakeMsgStep3.get(), 3)
+                                  handShakeMsgStep3.get(), 3)
         readyForFinalization = true
 
-  node.subscribe((kind: PubsubSub, topic: pubsubTopic), some(initiatorHandshakeHandler))
+  node.subscribe((kind: PubsubSub, topic: pubsubTopic),
+                 some(initiatorHandshakeHandler))
 
   await publishHandShakeInitiatorMsg(node, pubSubTopic, contentTopic,
-      initialMessage.get())
+                                     initialMessage.get())
 
   while true:
     if readyForFinalization:
