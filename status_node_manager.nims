@@ -25,6 +25,6 @@ task wakuUtils, "Building Waku Utils":
     buildBinary "waku_handshake_utils", "libs/waku-utils/"
 
 task wakuUtilsExamples, "Building Waku Utils Examples":
-    buildBinary "agentA", "libs/waku-utils/example/"
-    buildBinary "agentB", "libs/waku-utils/example/"
+    buildBinary "agentA", "libs/waku-utils/example/nwaku/"
+    buildBinary "agentB", "libs/waku-utils/example/nwaku/"
     buildBinary "initiator", "libs/waku-utils/example/js-waku/"
