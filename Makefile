@@ -75,3 +75,11 @@ waku-utils: | deps librln
 
 waku-utils-example: | deps librln
 	nim wakuUtilsExamples $(NIM_PARAMS) status_node_manager.nims
+
+
+###########################
+##  STATUS NODE MANAGER  ##
+###########################
+
+status-node-manager: | deps librln
+	nim statusNodeManager $(NIM_PARAMS) status_node_manager.nims
