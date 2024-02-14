@@ -28,3 +28,6 @@ task wakuUtilsExamples, "Building Waku Utils Examples":
     buildBinary "agentA", "libs/waku-utils/example/nwaku/"
     buildBinary "agentB", "libs/waku-utils/example/nwaku/"
     buildBinary "initiator", "libs/waku-utils/example/js-waku/"
+
+task statusNodeManager, "Building Status Node Manager":
+    buildBinary "status_node_manager", "src/"
