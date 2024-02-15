@@ -13,8 +13,9 @@ import
   waku/common/[logging, protobuf]
 
 proc startWakuNode*(rng: ref HmacDrbgContext,
-                    wakuPort, discv5Port, requiredConnectedPeers: int
-    ):Future[WakuNode] {.async.} =
+                    wakuPort, discv5Port: uint16,
+                    requiredConnectedPeers: int
+    ): Future[WakuNode] {.async.} =
   let
     bootstrapNode = "enr:-P-4QGVNANzbhCI49du6Moyw98AjuMhKoOpE_Jges9JlCq-I" &
                     "CAVadktjfcNpuhQgT0g1cu86_S3nbM7eYkCsqDAQG7UBgmlkgnY0" &
@@ -62,7 +63,7 @@ proc startWakuNode*(rng: ref HmacDrbgContext,
   node.peerManager.start()
 
   (await wakuDiscv5.start()).isOkOr:
-    error "failed to start discv5", error = error
+    error "Failed to start discv5", error = error
     quit(1)
 
   # Wait for a minimum of peers to be connected, otherwise messages wont be gossiped

@@ -30,14 +30,12 @@ proc exampleNwakuAgentB(rng: ref HmacDrbgContext) {.async.} =
   var readyForFinalization = false
 
   let agentBInfo = initAgentKeysAndCommitment(rng)
-  let r = agentBInfo.commitment
 
   #########################
   # Content Topic information
-  let contentTopicInfo = ContentTopicInfo(
-    applicationName: "waku-noise-sessions",
-    applicationVersion: "0.1",
-    shardId: "10", )
+  let contentTopicInfo = ContentTopicInfo(applicationName: "waku-noise-sessions",
+                                          applicationVersion: "0.1",
+                                          shardId: "10", )
 
   let (qr, qrMessageNametag) = initQr(rng, contentTopicInfo, agentBInfo)
   writeFile("build/data/qr.txt", qr)

@@ -27,8 +27,6 @@ const
 proc exampleJSWaku(rng: ref HmacDrbgContext) {.async.} =
   setupLogLevel(logging.LogLevel.NOTICE)
 
-  var readyForFinalization = false
-
   ################################
   # Initiator static/ephemeral key initialization and commitment
   let initiatorInfo = initAgentKeysAndCommitment(rng)
@@ -36,7 +34,6 @@ proc exampleJSWaku(rng: ref HmacDrbgContext) {.async.} =
   # Read the QR
   let
     qr = readFile("build/data/qr.txt")
-    (_, _, _, readEphemeralKey, _) = fromQr(qr)
     qrMessageNameTag = fromHex(readFile("build/data/qrMessageNametag.txt"))
     # We set the contentTopic from the content topic parameters exchanged in the QR
     contentTopic = initContentTopicFromQr(qr)
@@ -47,9 +44,7 @@ proc exampleJSWaku(rng: ref HmacDrbgContext) {.async.} =
   notice "Initial information parsed from the QR", contentTopic = contentTopic,
       qrMessageNameTag = qrMessageNameTag
 
-  var
-    initiatorHS = initHS(initiatorInfo, qr, true)
-    initiatorHSResult: HandshakeResult
+  var initiatorHSResult: HandshakeResult
 
   # Start nwaku instance
   let node = await startWakuNode(rng, wakuPort, discv5Port,
@@ -71,13 +66,13 @@ proc exampleJSWaku(rng: ref HmacDrbgContext) {.async.} =
 
   var i = 150
   while i > 0:
-    realMessage = @[(byte)42,42,42,42]
+    realMessage = @[(byte)42, 42, 42, 42]
     payload = writeMessage(initiatorHSResult, realMessage,
                            initiatorHSResult.nametagsOutbound)
 
-    let wakuMsg = encodePayloadV2(  payload, contentTopic)
+    let wakuMsg = encodePayloadV2(payload, contentTopic)
     await node.publish(some(pubSubTopic), wakuMsg.get)
-    notice "Sending real message", payload=payload.messageNametag
+    notice "Sending real message", payload = payload.messageNametag
     await sleepAsync(100)
     i = i - 1
 
@@ -87,7 +82,7 @@ proc exampleJSWaku(rng: ref HmacDrbgContext) {.async.} =
   let
     message1 = @[(byte)1, 42, 42, 42]
     payload1 = writeMessage(initiatorHSResult, message1,
-                                initiatorHSResult.nametagsOutbound)
+                            initiatorHSResult.nametagsOutbound)
     wakuMessage1 = encodePayloadV2(payload1, contentTopic)
   notice "Sending first message"
   await node.publish(some(pubSubTopic), wakuMessage1.get)

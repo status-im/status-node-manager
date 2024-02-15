@@ -25,16 +25,12 @@ const
 
 proc exampleNwakuAgentA(rng: ref HmacDrbgContext) {.async.} =
   setupLogLevel(logging.LogLevel.NOTICE)
-
-  var readyForFinalization = false
-
   # agentA static/ephemeral key initialization and commitment
   let agentAInfo = initAgentKeysAndCommitment(rng)
 
   # Read the QR
   let
     qr = readFile("build/data/qr.txt")
-    (_, _, _, readEphemeralKey, _) = fromQr(qr)
     qrMessageNameTag = cast[seq[byte]](readFile("build/data/qrMessageNametag.txt"))
     # We set the contentTopic from the content topic parameters exchanged in the QR
     contentTopic = initContentTopicFromQr(qr)
@@ -45,11 +41,9 @@ proc exampleNwakuAgentA(rng: ref HmacDrbgContext) {.async.} =
   notice "Initial information parsed from the QR", contentTopic = contentTopic,
       qrMessageNameTag = qrMessageNameTag
 
-  var
-    agentAHS = initHS(agentAInfo, qr, true)
-    agentAHSResult: HandshakeResult
+  var agentAHSResult: HandshakeResult
 
-   # Start nwaku instance
+  # Start nwaku instance
   let node = await startWakuNode(rng, wakuPort, discv5Port,
                                  requiredConnectedPeers)
 

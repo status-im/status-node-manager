@@ -183,9 +183,7 @@ proc handleHandShakeMsg*(rng: ref HmacDrbgContext,
                          initiatorHS: var HandshakeState,
                          initiatorMessageNametag: var MessageNametag) =
   notice "Received handshake message for step:", step = step,
-         psTopic = pubSubTopic,
-         contentTopic = contentTopic,
-         payload = payload
+      psTopic = pubSubTopic, contentTopic = contentTopic, payload = payload
   notice "Handling handshake message for step:", step = step
   initiatorStep = stepHandshake(rng[], initiatorHS,
                                 readPayloadV2 = payload,
