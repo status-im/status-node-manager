@@ -22,7 +22,7 @@ jobs:
             cpu: amd64
           - os: windows
             cpu: amd64
-        branch: [version-1-6, version-2-0, devel]
+        branch: [version-1-6]
         include:
           - target:
               os: linux
@@ -41,9 +41,8 @@ jobs:
       run:
         shell: ${{ matrix.shell }}
 
-    name: '${{ matrix.target.os }}-${{ matrix.target.cpu }} (Nim ${{ matrix.branch }})'
+    name: "${{ matrix.target.os }}-${{ matrix.target.cpu }} (Nim ${{ matrix.branch }})"
     runs-on: ${{ matrix.builder }}
-    continue-on-error: ${{ matrix.branch == 'devel' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -71,7 +70,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: external/dlls-${{ matrix.target.cpu }}
-          key: 'dlls-${{ matrix.target.cpu }}'
+          key: "dlls-${{ matrix.target.cpu }}"
 
       - name: Install DLLs dependencies (Windows)
         if: >
