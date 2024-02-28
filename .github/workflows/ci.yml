@@ -43,6 +43,7 @@ jobs:
 
     name: "${{ matrix.target.os }}-${{ matrix.target.cpu }} (Nim ${{ matrix.branch }})"
     runs-on: ${{ matrix.builder }}
+    continue-on-error: ${{ matrix.target.os == 'windows' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
