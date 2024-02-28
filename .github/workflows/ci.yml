@@ -124,7 +124,7 @@ jobs:
             scripts/ci/build_nim.sh nim csources dist/nimble-latest NimBinaries
           echo '${{ github.workspace }}/nim/bin' >> $GITHUB_PATH
 
-      - name: Run tests
+      - name: Install dependencies
         run: |
           if [[ "${{ matrix.target.os }}" == "windows" ]]; then
             # https://github.com/status-im/nimbus-eth2/issues/3121
@@ -132,5 +132,9 @@ jobs:
           fi
           nim --version
           nimble --version
+          nimble install
+
+      - name: Run tests
+        run: |
           nimble build
           nimble test
