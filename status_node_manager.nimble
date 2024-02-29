@@ -1,5 +1,4 @@
 # Package
-
 version       = "0.1.0"
 author        = "Status Research & Development GmbH"
 description   = "Back-end service for the Status node management GUI"
@@ -28,3 +27,7 @@ requires "nim >= 1.6.14",
     "dnsdisc",
     "web3",
     "libbacktrace"
+
+before build:
+    exec("git submodule update --init --recursive")
+    exec("make librln")
