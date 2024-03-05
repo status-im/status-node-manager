@@ -223,15 +223,16 @@
       }
     },
     "metrics": {
-      "version": "0.0.1",
-      "vcsRevision": "51f1227d0fd04ce84b1ef784b11280cb7875348c",
+      "version": "0.1.0",
+      "vcsRevision": "0e768ca7fb7df4798649145a403e7db65cae1f8b",
       "url": "https://github.com/status-im/nim-metrics.git",
       "downloadMethod": "git",
       "dependencies": [
-        "chronos"
+        "chronos",
+        "stew"
       ],
       "checksums": {
-        "sha1": "948aaca1763c838a7752251bab9a8bcfda66acfe"
+        "sha1": "98b931746c70f5266c63543380eff395daedef3d"
       }
     },
     "presto": {
@@ -438,7 +439,7 @@
     },
     "waku": {
       "version": "0.1.0",
-      "vcsRevision": "3d816c08145cf62221496c0e78cce865f06f5e40",
+      "vcsRevision": "9ef2eccb8aa19e80a9381dcb2ece29718ebce30f",
       "url": "https://github.com/waku-org/nwaku",
       "downloadMethod": "git",
       "dependencies": [
@@ -458,7 +459,7 @@
         "regex"
       ],
       "checksums": {
-        "sha1": "43d12b3c1bf9078536b0355f3d11e46e7bdc55a7"
+        "sha1": "e2eb8d25b1751cdf0bd7363e28a8f681aedf27cf"
       }
     }
   },
