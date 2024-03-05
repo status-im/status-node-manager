@@ -107,7 +107,7 @@ proc publishHandShakeInitiatorMsg*(node: WakuNode,
                                    contentTopic: ContentTopic,
                                    message: WakuMessage) {.async.} =
   notice "Publishing handshake initiator message", step = 1
-  await node.publish(some(pubSubTopic), message)
+  discard await node.publish(some(pubSubTopic), message)
   notice "Published handshake initiator message",
          step = 1,
          psTopic = pubSubTopic,
@@ -168,7 +168,7 @@ proc publishHandShakeMsg*(node: WakuNode,
                           message: WakuMessage,
                           step: int) {.async.} =
   notice "Publishing handshake message for step:", step = step
-  await node.publish(some(pubSubTopic), message)
+  discard await node.publish(some(pubSubTopic), message)
   notice "Published handshake message for step:", step = step,
          psTopic = pubSubTopic,
          contentTopic = contentTopic,
