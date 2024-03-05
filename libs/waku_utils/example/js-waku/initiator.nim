@@ -71,7 +71,7 @@ proc exampleJSWaku(rng: ref HmacDrbgContext) {.async.} =
                            initiatorHSResult.nametagsOutbound)
 
     let wakuMsg = encodePayloadV2(payload, contentTopic)
-    await node.publish(some(pubSubTopic), wakuMsg.get)
+    discard await node.publish(some(pubSubTopic), wakuMsg.get)
     notice "Sending real message", payload = payload.messageNametag
     await sleepAsync(100)
     i = i - 1
@@ -85,7 +85,7 @@ proc exampleJSWaku(rng: ref HmacDrbgContext) {.async.} =
                             initiatorHSResult.nametagsOutbound)
     wakuMessage1 = encodePayloadV2(payload1, contentTopic)
   notice "Sending first message"
-  await node.publish(some(pubSubTopic), wakuMessage1.get)
+  discard await node.publish(some(pubSubTopic), wakuMessage1.get)
 
   let
     lostMessage1 = @[(byte)1, 5, 5, 5]
@@ -105,7 +105,7 @@ proc exampleJSWaku(rng: ref HmacDrbgContext) {.async.} =
                             initiatorHSResult.nametagsOutbound)
     wakuMessage2 = encodePayloadV2(payload2, contentTopic)
   notice "Sending second message"
-  await node.publish(some(pubSubTopic), wakuMessage2.get)
+  discard await node.publish(some(pubSubTopic), wakuMessage2.get)
 
   let
     lostMessage3 = @[(byte)3, 5, 5, 5]
@@ -115,7 +115,7 @@ proc exampleJSWaku(rng: ref HmacDrbgContext) {.async.} =
 
   await sleepAsync(10000)
   notice "Sending first lost message"
-  await node.publish(some(pubSubTopic), wakuLostMessage1.get)
+  discard await node.publish(some(pubSubTopic), wakuLostMessage1.get)
 
   let
     message3 = @[(byte)3, 42, 42, 42]
@@ -123,15 +123,15 @@ proc exampleJSWaku(rng: ref HmacDrbgContext) {.async.} =
                             initiatorHSResult.nametagsOutbound)
     wakuMessage3 = encodePayloadV2(payload3, contentTopic)
   notice "Sending third message"
-  await node.publish(some(pubSubTopic), wakuMessage3.get)
+  discard await node.publish(some(pubSubTopic), wakuMessage3.get)
 
   await sleepAsync(10000)
   notice "Sending second lost message"
-  await node.publish(some(pubSubTopic), wakuLostMessage2.get)
+  discard await node.publish(some(pubSubTopic), wakuLostMessage2.get)
 
   await sleepAsync(1000)
   notice "Sending third lost message"
-  await node.publish(some(pubSubTopic), wakuLostMessage3.get)
+  discard await node.publish(some(pubSubTopic), wakuLostMessage3.get)
 
 
 when isMainModule:

@@ -9,6 +9,7 @@ import
 
 import
   waku/[waku_core, waku_node, waku_enr, waku_discv5],
+  waku/factory/builder,
   waku/node/peer_manager,
   waku/common/[logging, protobuf]
 
