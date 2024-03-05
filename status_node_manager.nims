@@ -22,12 +22,12 @@ proc buildLibrary(name: string, srcDir = "./", params = "", `type` = "static") =
 
 ### Tasks
 task wakuUtils, "Building Waku Utils":
-    buildBinary "waku_handshake_utils", "libs/waku-utils/"
+    buildBinary "waku_handshake_utils", "libs/waku_utils/"
 
 task wakuUtilsExamples, "Building Waku Utils Examples":
-    buildBinary "agentA", "libs/waku-utils/example/nwaku/"
-    buildBinary "agentB", "libs/waku-utils/example/nwaku/"
-    buildBinary "initiator", "libs/waku-utils/example/js-waku/"
+    buildBinary "agentA", "libs/waku_utils/example/nwaku/"
+    buildBinary "agentB", "libs/waku_utils/example/nwaku/"
+    buildBinary "initiator", "libs/waku_utils/example/js-waku/"
 
 task statusNodeManager, "Building Status Node Manager":
     buildBinary "status_node_manager", "src/"
