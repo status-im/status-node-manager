@@ -2,6 +2,7 @@
 status_node_manager
 status_node_manager.exe
 status_node_manager.out
+!src/status_node_manager
 
 # Nim cache
 nimcache
