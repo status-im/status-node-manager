@@ -1,8 +1,14 @@
 import
   options,
-  confutils/defs
-
+  confutils/defs,
+  confutils/std/net
 import waku/waku_core
+
+import ./network
+
+export
+  defaultSNMRestPort, defaultAdminListenAddress,
+  parseCmdArg, completeCmdArg
 
 type
   SNMStartUpCmd* {.pure.} = enum
@@ -16,7 +22,39 @@ type
       defaultValue: SNMStartUpCmd.noCommand .}: SNMStartUpCmd
 
     of SNMStartUpCmd.noCommand:
-      discard
+      restEnabled* {.
+        desc: "Enable the REST server"
+        defaultValue: true
+        name: "rest" .}: bool
+
+      restPort* {.
+        desc: "Port for the REST server"
+        defaultValue: defaultSNMRestPort
+        defaultValueDesc: $defaultSNMRestPortDesc
+        name: "rest-port" .}: Port
+
+      restAddress* {.
+        desc: "Listening address of the REST server"
+        defaultValue: defaultAdminListenAddress
+        defaultValueDesc: $defaultAdminListenAddressDesc
+        name: "rest-address" .}: IpAddress
+
+      restRequestTimeout* {.
+        defaultValue: 0
+        defaultValueDesc: "infinite"
+        desc: "The number of seconds to wait until complete REST request " &
+              "will be received"
+        name: "rest-request-timeout" .}: Natural
+
+      restMaxRequestBodySize* {.
+        defaultValue: 16_384
+        desc: "Maximum size of REST request body (kilobytes)"
+        name: "rest-max-body-size" .}: Natural
+
+      restMaxRequestHeadersSize* {.
+        defaultValue: 128
+        desc: "Maximum size of REST request headers (kilobytes)"
+        name: "rest-max-headers-size" .}: Natural
 
     of SNMStartUpCmd.pair:
       qr* {.
