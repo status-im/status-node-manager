@@ -1,21 +1,48 @@
 import
+  # Standard library
   std/[strutils, typetraits],
-  confutils,
-  chronos,
-  libp2p/crypto/crypto,
-  eth/[p2p/discoveryv5/enr],
+
+  # Nimble packages
+  confutils, chronos,
   chronicles/[log_output, topics_registry],
-  waku/[waku_core]
+  eth/p2p/discoveryv5/enr,
+  libp2p/crypto/crypto,
+  presto,
+  waku/waku_core,
 
-import status_node_manager/[
-    config,
-    helpers/submodule # TODO: remove me
-  ]
+  # Local modules
+  status_node_manager/[config, rest/common],
+  ../libs/waku_utils/waku_pair
 
-import ../libs/waku_utils/waku_pair
+type SNM* = ref object
+  restServer*: RestServerRef
+
+proc init*(T: type SNM,
+           config: StatusNodeManagerConfig): SNM =
+
+  let restServer = if config.restEnabled:
+    RestServerRef.init(config.restAddress, config.restPort,
+                       restValidate,
+                       config)
+  else:
+    nil
+
+  SNM(restServer: restServer)
+
+proc run(snm: SNM) =
+  if not isNil(snm.restServer):
+    snm.restServer.start()
+
+  runForever()
 
 proc setupLogLevel*(level: LogLevel) =
   topics_registry.setLogLevel(level)
+
+proc doRunStatusNodeManager(config: StatusNodeManagerConfig) =
+  notice "Starting Status Node Manager"
+
+  let snm = SNM.init(config)
+  snm.run()
 
 proc doWakuPairing(config: StatusNodeManagerConfig, rng: ref HmacDrbgContext) =
   let wakuPairResult = waitFor wakuPair(rng, config.qr, config.qrMessageNameTag,
@@ -32,6 +59,6 @@ when isMainModule:
   let conf = load StatusNodeManagerConfig
 
   case conf.cmd
-  of SNMStartUpCmd.noCommand: echo(getWelcomeMessage()) # TODO: remove me
+  of SNMStartUpCmd.noCommand: doRunStatusNodeManager(conf)
   of SNMStartUpCmd.pair: doWakuPairing(conf, rng)
 
