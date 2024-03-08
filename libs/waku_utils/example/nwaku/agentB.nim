@@ -1,20 +1,21 @@
 import
-  stew/shims/net,
+  # Nimble packages
   chronicles,
   chronos,
   confutils,
   libp2p/crypto/crypto,
-  eth/[keys, p2p/discoveryv5/enr]
+  eth/[keys, p2p/discoveryv5/enr],
 
-import
+  # Nimble packages - Waku
   waku/[waku_core, waku_node, waku_enr, waku_discv5],
   waku/waku_noise/[noise_types, noise_utils, noise_handshake_processing],
   waku/utils/noise,
   waku/node/peer_manager,
-  waku/common/[logging, protobuf]
+  waku/common/[logging, protobuf],
 
-import ../../waku_handshake_utils
-import ../../waku_node
+  # Local modules
+  ../../waku_handshake_utils,
+  ../../waku_node
 
 const
   wakuPort = 50000

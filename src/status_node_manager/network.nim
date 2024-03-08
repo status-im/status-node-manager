@@ -1,4 +1,6 @@
-import confutils/std/net
+import
+  # Nimble packages
+  confutils/std/net
 
 const
   defaultSNMRestPort* = 13000
