@@ -1,18 +1,20 @@
 import
+  # Nimble packages
   chronicles,
   chronos,
   libp2p/crypto/crypto,
   eth/[keys, p2p/discoveryv5/enr],
-  nimcrypto/utils
+  nimcrypto/utils,
 
-import
+  # Nimble packages - Waku
   waku/[waku_core, waku_discv5],
   waku/waku_noise/noise_types,
   waku/node/[peer_manager, waku_node],
-  waku/common/logging
+  waku/common/logging,
 
-import ./waku_handshake_utils
-import ./waku_node
+  # Local modules
+  ./waku_handshake_utils,
+  ./waku_node
 
 type WakuPairResult* = object
   wakuNode*: WakuNode

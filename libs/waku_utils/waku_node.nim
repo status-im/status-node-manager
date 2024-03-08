@@ -1,13 +1,14 @@
 import
+  # Standard library
   std/[tables, sequtils],
-  stew/shims/net,
-  chronicles,
-  chronos,
-  confutils,
-  libp2p/crypto/crypto,
-  eth/[keys, p2p/discoveryv5/enr]
 
-import
+  # Nimble packages
+  stew/shims/net,
+  chronicles, chronos, confutils,
+  libp2p/crypto/crypto,
+  eth/[keys, p2p/discoveryv5/enr],
+
+  # Nimble packages - Waku
   waku/[waku_core, waku_node, waku_enr, waku_discv5],
   waku/factory/builder,
   waku/node/peer_manager,

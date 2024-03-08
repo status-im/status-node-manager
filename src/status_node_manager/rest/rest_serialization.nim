@@ -1,11 +1,12 @@
-import std/[strutils, algorithm, sets, strformat]
-import chronos, chronos/apps, chronos/unittest2/asynctests, stew/byteutils,
-       metrics,
-       nimcrypto
-import presto/[route, segpath, server, client]
-import json_serialization/std/[net, sets],
-       json_serialization/stew/results as jsonSerializationResults,
-       serialization, json_serialization
+import
+  # Standard library
+  std/sets,
+
+  # Nimble packages
+  chronos, stew/byteutils,
+  presto/[route, segpath, server, client],
+  json_serialization,
+  serialization
 
 const ApplicationJsonMediaType* = MediaType.init("application/json")
 

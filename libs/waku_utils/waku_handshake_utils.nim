@@ -1,7 +1,8 @@
 import
-  stew/[byteutils], chronicles, chronos, confutils
+  # Nimble packages
+  stew/[byteutils], chronicles, chronos, confutils,
 
-import
+  # Nimble packages - Waku
   waku/waku_noise/[noise_types, noise_utils, noise_handshake_processing],
   waku/utils/noise,
   waku/[waku_core, waku_node],

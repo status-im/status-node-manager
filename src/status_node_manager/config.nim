@@ -1,10 +1,10 @@
 import
-  options,
-  confutils/defs,
-  confutils/std/net
-import waku/waku_core
+  # Nimble packages
+  confutils/defs, confutils/std/net,
+  waku/waku_core,
 
-import ./network
+  # Local modules
+  ./network
 
 export
   defaultSNMRestPort, defaultAdminListenAddress,
