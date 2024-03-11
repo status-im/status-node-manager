@@ -56,18 +56,6 @@ type
       defaultValue: SNMStartUpCmd.noCommand .}: SNMStartUpCmd
 
     of SNMStartUpCmd.noCommand:
-     discard
-
-    of SNMStartUpCmd.pair:
-      qr* {.
-        desc: "A string representation of the QR code produced by the GUI"
-        name: "qr" .}: string
-
-      qrMessageNameTag* {.
-        desc: "A string representation of the initial message nametag produced" &
-              "by the GUI. It is used for the initial hadnshake message"
-        name: "qr-message-nametag" .}: string
-
       wakuPort* {.
         desc: "The port to use for the Waku node"
         defaultValue: 60000
@@ -82,6 +70,16 @@ type
         desc: "The number of peers to connect to before starting the Waku node"
         defaultValue: 2
         name: "required-connected-peers" .}: int
+
+    of SNMStartUpCmd.pair:
+      qr* {.
+        desc: "A string representation of the QR code produced by the GUI"
+        name: "qr" .}: string
+
+      qrMessageNameTag* {.
+        desc: "A string representation of the initial message nametag produced" &
+              "by the GUI. It is used for the initial hadnshake message"
+        name: "qr-message-nametag" .}: string
 
       pubSubTopic* {.
         desc: "The topic to subscribe to"
