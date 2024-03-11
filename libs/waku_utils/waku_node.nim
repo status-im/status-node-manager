@@ -60,6 +60,9 @@ proc startWakuNode*(rng: ref HmacDrbgContext,
                                        some(node.peerManager),
                                        node.topicSubscriptionQueue)
 
+  notice "Starting Waku Node", enr=bootstrapNode, wakuPort=wakuPort,
+      discv5Port=discv5Port
+
   await node.start()
   await node.mountRelay()
   node.peerManager.start()
@@ -73,10 +76,10 @@ proc startWakuNode*(rng: ref HmacDrbgContext,
     let numConnectedPeers = node.peerManager.peerStore[
         ConnectionBook].book.values().countIt(it == Connected)
     if numConnectedPeers >= requiredConnectedPeers:
-      notice "Node is ready", connectedPeers = numConnectedPeers,
+      notice "Waku Node is ready", connectedPeers = numConnectedPeers,
           required = requiredConnectedPeers
       break
-    notice "Waiting for the node to be ready",
+    notice "Waiting for the waku node to be ready",
         connectedPeers = numConnectedPeers, required = requiredConnectedPeers
     await sleepAsync(5000)
 
