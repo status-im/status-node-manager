@@ -11,15 +11,23 @@ import
   waku/waku_core,
 
   # Local modules
-  status_node_manager/[config, rest/common],
-  ../libs/waku_utils/waku_pair
+  status_node_manager/[config, waku, utils],
+  status_node_manager/rest/common
 
 type SNM* = ref object
   restServer*: RestServerRef
+  wakuHost*: ref WakuHost
 
 proc init*(T: type SNM,
-           config: StatusNodeManagerConfig): SNM =
+           rng: ref HmacDrbgContext,
+           config: StatusNodeManagerConfig): Future[SNM] {.async.} =
+  # Waku node setup
+  let wakuNodeParams = WakuNodeParams(wakuPort: config.wakuPort,
+                                      discv5Port: config.discv5Port,
+                                      requiredConnectedPeers: config.requiredConnectedPeers)
+  let wakuHost = await WakuHost.init(rng, wakuNodeParams)
 
+  # Rest server setup
   let restServer = if config.restEnabled:
     RestServerRef.init(config.restAddress, config.restPort,
                        restValidate,
@@ -27,7 +35,8 @@ proc init*(T: type SNM,
   else:
     nil
 
-  SNM(restServer: restServer)
+  SNM(restServer: restServer,
+      wakuHost: newClone wakuHost)
 
 proc run(snm: SNM) =
   if not isNil(snm.restServer):
@@ -38,10 +47,11 @@ proc run(snm: SNM) =
 proc setupLogLevel*(level: LogLevel) =
   topics_registry.setLogLevel(level)
 
-proc doRunStatusNodeManager(config: StatusNodeManagerConfig) =
+proc doRunStatusNodeManager(config: StatusNodeManagerConfig,
+                            rng: ref HmacDrbgContext) =
   notice "Starting Status Node Manager"
 
-  let snm = SNM.init(config)
+  let snm = waitFor SNM.init(rng, config)
   snm.run()
 
 proc doWakuPairing(config: StatusNodeManagerConfig, rng: ref HmacDrbgContext) =
@@ -59,6 +69,6 @@ when isMainModule:
   let conf = load StatusNodeManagerConfig
 
   case conf.cmd
-  of SNMStartUpCmd.noCommand: doRunStatusNodeManager(conf)
+  of SNMStartUpCmd.noCommand: doRunStatusNodeManager(conf, rng)
   of SNMStartUpCmd.pair: doWakuPairing(conf, rng)
 
