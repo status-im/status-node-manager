@@ -20,9 +20,9 @@ type WakuPairResult* = object
   wakuNode*: WakuNode
   wakuHandshakeResult*: HandshakeResult
 
-proc wakuPair*(rng: ref HmacDrbgContext, qr, qrMessageNameTagHex: string,
-               wakuPort, discv5Port: uint16,
-               requiredConnectedPeers: int,
+proc wakuPair*(rng: ref HmacDrbgContext,
+               node: WakuNode,
+               qr, qrMessageNameTagHex: string,
                pubSubTopic: PubsubTopic
     ): Future[WakuPairResult] {.async.} =
   # Initiator static/ephemeral key initialization and commitment
@@ -34,17 +34,12 @@ proc wakuPair*(rng: ref HmacDrbgContext, qr, qrMessageNameTagHex: string,
     # We set the contentTopic from the content topic parameters exchanged in the QR
     contentTopic = initContentTopicFromQr(qr)
 
-  notice "Initializing Waku pairing", wakuPort = wakuPort,
-      discv5Port = discv5Port
+  notice "Initializing Waku pairing"
 
   notice "Initial information parsed from the QR", contentTopic = contentTopic,
       qrMessageNameTag = qrMessageNameTag
 
   var initiatorHSResult: HandshakeResult
-
-  # Start nwaku instance
-  let node = await startWakuNode(rng, wakuPort, discv5Port,
-                                 requiredConnectedPeers)
 
   # Perform the handshake
   initiatorHSResult = await initiatorHandshake(rng, node, pubSubTopic,
