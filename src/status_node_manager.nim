@@ -12,6 +12,7 @@ import
 
   # Local modules
   status_node_manager/[config, waku, utils],
+  status_node_manager/status_node_manager_status,
   status_node_manager/rest/common,
   status_node_manager/rest/apis/waku/[types, rest_waku_calls, rest_waku_api],
   ../libs/waku_utils/waku_node
@@ -40,15 +41,24 @@ proc init*(T: type SNM,
   SNM(restServer: restServer,
       wakuHost: newClone wakuHost)
 
+proc stop(snm: SNM) =
+  snmStatus = SNMStatus.Stopping
+  notice "Graceful shutdown"
+
 proc installRestHandlers(restServer: RestServerRef, snm: SNM) =
   restServer.router.installWakuApiHandlers(snm.wakuHost)
 
 proc run(snm: SNM) {.async.} =
+  snmStatus = SNMStatus.Running
+
   if not isNil(snm.restServer):
     snm.restServer.installRestHandlers(snm)
     snm.restServer.start()
 
-  runForever()
+  while snmStatus == SNMStatus.Running:
+    poll()
+
+  snm.stop()
 
 proc setupLogLevel*(level: LogLevel) =
   topics_registry.setLogLevel(level)
