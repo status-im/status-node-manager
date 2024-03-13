@@ -83,3 +83,6 @@ waku-utils-example: | deps librln
 
 status-node-manager: | deps librln
 	nim statusNodeManager $(NIM_PARAMS) status_node_manager.nims
+
+test: | deps librln
+	nim test $(NIM_PARAMS) status_node_manager.nims
