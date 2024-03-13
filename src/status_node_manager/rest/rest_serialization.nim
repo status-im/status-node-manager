@@ -6,23 +6,42 @@ import
   chronos, stew/byteutils,
   presto/[route, segpath, server, client],
   json_serialization,
-  serialization
+  serialization,
+
+  # Local modules
+  ./apis/waku/types
 
 const ApplicationJsonMediaType* = MediaType.init("application/json")
 
 createJsonFlavor RestJson
 
 RestJson.useDefaultSerializationFor(
-  auto
+  WakuPairRequestData
   )
 
 type
   DecodeTypes* =
-    auto
+    WakuPairRequestData
 
 type
   EncodeTypes* =
-    auto
+    WakuPairRequestData
+
+proc jsonResponsePlain*(t: typedesc[RestApiResponse],
+                        data: auto): RestApiResponse =
+  let res =
+    block:
+      var default: seq[byte]
+      try:
+        var stream = memoryOutput()
+        var writer = JsonWriter[RestJson].init(stream)
+        writer.writeValue(data)
+        stream.getOutput(seq[byte])
+      except SerializationError:
+        default
+      except IOError:
+        default
+  RestApiResponse.response(res, Http200, "application/json")
 
 proc encodeBytes*[T: EncodeTypes](value: T,
                                   contentType: string): RestResult[seq[byte]] =
