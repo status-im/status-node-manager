@@ -63,8 +63,8 @@ proc run(snm: SNM) {.async.} =
 proc setupLogLevel*(level: LogLevel) =
   topics_registry.setLogLevel(level)
 
-proc doRunStatusNodeManager(config: StatusNodeManagerConfig,
-                            rng: ref HmacDrbgContext) =
+proc doRunStatusNodeManager*(config: StatusNodeManagerConfig,
+                             rng: ref HmacDrbgContext) =
   notice "Starting Status Node Manager"
 
   let snm = waitFor SNM.init(rng, config)

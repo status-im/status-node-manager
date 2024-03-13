@@ -13,8 +13,7 @@ import
   waku/common/logging,
 
   # Local modules
-  ./waku_handshake_utils,
-  ./waku_node
+  ./waku_handshake_utils
 
 type WakuPairResult* = object
   wakuNode*: WakuNode
