@@ -7,12 +7,14 @@ import
   chronicles/[log_output, topics_registry],
   eth/p2p/discoveryv5/enr,
   libp2p/crypto/crypto,
-  presto,
+  presto/[route, segpath, server, client],
   waku/waku_core,
 
   # Local modules
   status_node_manager/[config, waku, utils],
-  status_node_manager/rest/common
+  status_node_manager/rest/common,
+  status_node_manager/rest/apis/waku/[types, rest_waku_calls, rest_waku_api],
+  ../libs/waku_utils/waku_node
 
 type SNM* = ref object
   restServer*: RestServerRef
@@ -38,8 +40,12 @@ proc init*(T: type SNM,
   SNM(restServer: restServer,
       wakuHost: newClone wakuHost)
 
-proc run(snm: SNM) =
+proc installRestHandlers(restServer: RestServerRef, snm: SNM) =
+  restServer.router.installWakuApiHandlers(snm.wakuHost)
+
+proc run(snm: SNM) {.async.} =
   if not isNil(snm.restServer):
+    snm.restServer.installRestHandlers(snm)
     snm.restServer.start()
 
   runForever()
@@ -52,14 +58,19 @@ proc doRunStatusNodeManager(config: StatusNodeManagerConfig,
   notice "Starting Status Node Manager"
 
   let snm = waitFor SNM.init(rng, config)
-  snm.run()
+  waitFor snm.run()
 
 proc doWakuPairing(config: StatusNodeManagerConfig, rng: ref HmacDrbgContext) =
-  let wakuPairResult = waitFor wakuPair(rng, config.qr, config.qrMessageNameTag,
-                                        config.wakuPort, config.discv5Port,
-                                        config.requiredConnectedPeers,
-                                        config.pubSubTopic)
-  echo wakuPairResult.wakuHandshakeResult
+  var wakuClient = RestClientRef.new(initTAddress(config.restAddress,
+                                                  config.restPort))
+
+  let wakuPairRequestData = WakuPairRequestData(
+    qr: config.qr,
+    qrMessageNameTag: config.qrMessageNameTag,
+    pubSubTopic: config.pubSubTopic
+  )
+
+  waitFor wakuPair(wakuClient, wakuPairRequestData)
 
 when isMainModule:
   setupLogLevel(LogLevel.NOTICE)
