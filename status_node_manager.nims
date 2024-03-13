@@ -20,6 +20,10 @@ proc buildLibrary(name: string, srcDir = "./", params = "", `type` = "static") =
   else:
     exec "nim c" & " --out:build/" & name & ".so --threads:on --app:lib --opt:size --noMain --header " & extra_params & " " & srcDir & name & ".nim"
 
+proc test(name: string, params = "-d:chronicles_log_level=DEBUG", lang = "c") =
+  buildBinary name, "tests/", params
+  exec "build/" & name
+
 ### Tasks
 task wakuUtils, "Building Waku Utils":
     buildBinary "waku_handshake_utils", "libs/waku_utils/"
@@ -31,3 +35,6 @@ task wakuUtilsExamples, "Building Waku Utils Examples":
 
 task statusNodeManager, "Building Status Node Manager":
     buildBinary "status_node_manager", "src/"
+
+task test, "Build & run all tests":
+    test "test_waku_api"
