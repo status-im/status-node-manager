@@ -1,13 +1,14 @@
 import
   # Standard library
   std/[typetraits],
+  presto/[client],
 
   # Nimble packages
   chronos, confutils, presto, metrics,
   chronicles, stew/io2,
 
   # Project modules
-  ../config.nim
+  ../config
 
 func restValidate*(key: string, value: string): int =
   0
@@ -44,3 +45,8 @@ proc init*(T: type RestServerRef,
     let server = res.get()
     notice "Starting REST HTTP server", url = "http://" & $server.localAddress()
     server
+
+proc raiseUnknownStatusError*(resp: RestPlainResponse) {.
+     noreturn, raises: [RestError].} =
+  let msg = "Unknown response status error (" & $resp.status & ")"
+  raise newException(RestError, msg)
