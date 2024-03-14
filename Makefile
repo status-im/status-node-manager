@@ -30,10 +30,10 @@ libbacktrace:
 clean-libbacktrace:
 	+ $(MAKE) -C nimble_develop/nim-libbacktrace clean $(HANDLE_OUTPUT)
 
-# Extend deps and clean targets
-ifneq ($(USE_LIBBACKTRACE), 0)
-deps: | libbacktrace
-endif
+# # Extend deps and clean targets
+# ifneq ($(USE_LIBBACKTRACE), 0)
+# deps: | libbacktrace
+# endif
 
 clean: | clean-libbacktrace
 
