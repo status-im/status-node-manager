@@ -70,10 +70,9 @@ proc doRunStatusNodeManager*(config: StatusNodeManagerConfig,
   let snm = waitFor SNM.init(rng, config)
   waitFor snm.run()
 
-proc doWakuPairing(config: StatusNodeManagerConfig, rng: ref HmacDrbgContext) =
-  var wakuClient = RestClientRef.new(initTAddress(config.restAddress,
-                                                  config.restPort))
-
+proc doWakuPairing(config: StatusNodeManagerConfig,
+                   rng: ref HmacDrbgContext,
+                   wakuClient: var RestClientRef) =
   let wakuPairRequestData = WakuPairRequestData(
     qr: config.qr,
     qrMessageNameTag: config.qrMessageNameTag,
@@ -81,6 +80,15 @@ proc doWakuPairing(config: StatusNodeManagerConfig, rng: ref HmacDrbgContext) =
   )
 
   waitFor wakuPair(wakuClient, wakuPairRequestData)
+
+proc doWakuCommand(config: StatusNodeManagerConfig, rng: ref HmacDrbgContext) =
+  var wakuClient = RestClientRef.new(initTAddress(config.restAddress,
+                                                  config.restPort))
+  case config.wakuCmd
+  of WakuCommand.pair:
+    doWakuPairing(config, rng, wakuClient)
+  of WakuCommand.exportHandshake:
+    discard
 
 when isMainModule:
   setupLogLevel(LogLevel.NOTICE)
@@ -91,5 +99,5 @@ when isMainModule:
 
   case conf.cmd
   of SNMStartUpCmd.noCommand: doRunStatusNodeManager(conf, rng)
-  of SNMStartUpCmd.pair: doWakuPairing(conf, rng)
+  of SNMStartUpCmd.waku: doWakuCommand(conf, rng)
 

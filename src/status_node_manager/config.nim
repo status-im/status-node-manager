@@ -13,7 +13,11 @@ export
 type
   SNMStartUpCmd* {.pure.} = enum
     noCommand,
+    waku,
+
+  WakuCommand* {.pure.} = enum
     pair,
+    exportHandshake
 
 type
   StatusNodeManagerConfig* = object
@@ -71,17 +75,23 @@ type
         defaultValue: 2
         name: "required-connected-peers" .}: int
 
-    of SNMStartUpCmd.pair:
-      qr* {.
-        desc: "A string representation of the QR code produced by the GUI"
-        name: "qr" .}: string
+    of SNMStartUpCmd.waku:
+      case wakuCmd* {.command.}: WakuCommand
 
-      qrMessageNameTag* {.
-        desc: "A string representation of the initial message nametag produced" &
-              "by the GUI. It is used for the initial hadnshake message"
-        name: "qr-message-nametag" .}: string
+      of WakuCommand.pair:
+        qr* {.
+          desc: "A string representation of the QR code produced by the GUI"
+          name: "qr" .}: string
 
-      pubSubTopic* {.
-        desc: "The topic to subscribe to"
-        defaultValue: "/waku/2/default-waku/proto"
-        name: "pubsub-topic" .}: PubsubTopic
+        qrMessageNameTag* {.
+          desc: "A string representation of the initial message nametag produced" &
+                "by the GUI. It is used for the initial hadnshake message"
+          name: "qr-message-nametag" .}: string
+
+        pubSubTopic* {.
+          desc: "The topic to subscribe to"
+          defaultValue: "/waku/2/default-waku/proto"
+          name: "pubsub-topic" .}: PubsubTopic
+
+      of WakuCommand.exportHandshake:
+        discard
