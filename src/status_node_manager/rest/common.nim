@@ -50,3 +50,7 @@ proc raiseUnknownStatusError*(resp: RestPlainResponse) {.
      noreturn, raises: [RestError].} =
   let msg = "Unknown response status error (" & $resp.status & ")"
   raise newException(RestError, msg)
+
+template unrecognizedFieldWarning* =
+  trace "JSON field not recognized by the current version of Status Node Manager. Consider upgrading",
+        fieldName, typeName = typetraits.name(typeof value)
