@@ -6,9 +6,12 @@ import
   # Local modules
   ./network
 
+from std/os import getHomeDir, `/`
+
 export
   defaultSNMRestPort, defaultAdminListenAddress,
-  parseCmdArg, completeCmdArg
+  parseCmdArg, completeCmdArg, `/`
+
 
 type
   SNMStartUpCmd* {.pure.} = enum
@@ -21,6 +24,13 @@ type
 
 type
   StatusNodeManagerConfig* = object
+    dataDir* {.
+      desc: "The directory where status node manager will store all data"
+      defaultValue: config.defaultDataDir()
+      defaultValueDesc: ""
+      abbr: "d"
+      name: "data-dir" .}: OutDir
+
     restEnabled* {.
       desc: "Enable the REST server"
       defaultValue: true
@@ -95,3 +105,13 @@ type
 
       of WakuCommand.exportHandshake:
         discard
+
+proc defaultDataDir*[Conf](config: Conf): string =
+  let dataDir = when defined(windows):
+    "AppData" / "Roaming" / "StatusNodeManager"
+  elif defined(macosx):
+    "Library" / "Application Support" / "StatusNodeManager"
+  else:
+    ".cache" / "StatusNodeManager"
+
+  getHomeDir() / dataDir
