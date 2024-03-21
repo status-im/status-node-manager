@@ -12,6 +12,7 @@ export
   defaultSNMRestPort, defaultAdminListenAddress,
   parseCmdArg, completeCmdArg, `/`
 
+const wakuHandshakeDataFilename* = "handshake_data.json"
 
 type
   SNMStartUpCmd* {.pure.} = enum
@@ -104,7 +105,10 @@ type
           name: "pubsub-topic" .}: PubsubTopic
 
       of WakuCommand.exportHandshake:
-        discard
+        handshakeFile* {.
+          desc: "The file to export the waku handshake result to"
+          defaultValue: config.defaultDataDir() / "waku" / wakuHandshakeDataFilename
+          name: "handshake-file" .}: OutFile
 
 proc defaultDataDir*[Conf](config: Conf): string =
   let dataDir = when defined(windows):
