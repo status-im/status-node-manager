@@ -81,6 +81,12 @@ proc doWakuPairing(config: StatusNodeManagerConfig,
 
   waitFor wakuPair(wakuClient, wakuPairRequestData)
 
+proc doWakuHandshakeExport(config: StatusNodeManagerConfig,
+                           wakuClient: var RestClientRef) =
+  let requestData =
+    WakuExportHandshakeRequestData(exportFile: $config.handshakeFile)
+  waitFor wakuExportHandshake(wakuClient, requestData)
+
 proc doWakuCommand(config: StatusNodeManagerConfig, rng: ref HmacDrbgContext) =
   var wakuClient = RestClientRef.new(initTAddress(config.restAddress,
                                                   config.restPort))
@@ -88,7 +94,7 @@ proc doWakuCommand(config: StatusNodeManagerConfig, rng: ref HmacDrbgContext) =
   of WakuCommand.pair:
     doWakuPairing(config, rng, wakuClient)
   of WakuCommand.exportHandshake:
-    discard
+    doWakuHandshakeExport(config, wakuClient)
 
 when isMainModule:
   setupLogLevel(LogLevel.NOTICE)
