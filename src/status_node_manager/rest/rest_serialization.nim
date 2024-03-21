@@ -21,6 +21,7 @@ createJsonFlavor RestJson
 
 RestJson.useDefaultSerializationFor(
   WakuPairRequestData,
+  WakuExportHandshakeRequestData,
   HandshakeResult,
   CipherState,
   )
@@ -28,6 +29,7 @@ RestJson.useDefaultSerializationFor(
 type
   DecodeTypes* =
     WakuPairRequestData |
+    WakuExportHandshakeRequestData |
     HandshakeResult |
     CipherState |
     MDigest[256]
@@ -35,6 +37,7 @@ type
 type
   EncodeTypes* =
     WakuPairRequestData |
+    WakuExportHandshakeRequestData |
     HandshakeResult |
     CipherState |
     MDigest[256]
