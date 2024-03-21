@@ -1,31 +1,110 @@
 import
   # Standard library
-  std/sets,
+  std/[sets, strformat],
 
   # Nimble packages
-  chronos, stew/byteutils,
+  chronos,
   presto/[route, segpath, server, client],
   json_serialization,
+  nimcrypto,
   serialization,
+  stew/byteutils,
+  waku/waku_noise/noise_types,
 
   # Local modules
-  ./apis/waku/types
+  ./apis/waku/types,
+  ./common
 
 const ApplicationJsonMediaType* = MediaType.init("application/json")
 
 createJsonFlavor RestJson
 
 RestJson.useDefaultSerializationFor(
-  WakuPairRequestData
+  WakuPairRequestData,
+  HandshakeResult,
+  CipherState,
   )
 
 type
   DecodeTypes* =
-    WakuPairRequestData
+    WakuPairRequestData |
+    HandshakeResult |
+    CipherState |
+    MDigest[256]
 
 type
   EncodeTypes* =
-    WakuPairRequestData
+    WakuPairRequestData |
+    HandshakeResult |
+    CipherState |
+    MDigest[256]
+
+proc writeValue*(writer: var JsonWriter[RestJson], value: MessageNametagBuffer)
+    {.raises: [IOError].} =
+  writer.beginRecord()
+  writer.writeField("buffer", value.buffer)
+  writer.writeField("counter", value.counter)
+  if value.secret.isSome():
+    writer.writeField("secret", value.secret.get())
+  writer.endRecord()
+
+proc writeValue*(writer: var JsonWriter[RestJson], value: MDigest[256])
+    {.raises: [IOError].} =
+  writer.beginRecord()
+  writer.writeField("data", value.data)
+  writer.endRecord()
+
+proc readValue*(reader: var JsonReader[RestJson], value: var MessageNametagBuffer)
+    {.raises: [SerializationError, IOError].} =
+  var
+    buffer = none(array[MessageNametagBufferSize, MessageNametag])
+    counter = none(uint64)
+    secret = none(array[MessageNametagSecretLength, byte])
+
+  var keys = initHashSet[string]()
+  for fieldName in readObjectFields(reader):
+    # Check for reapeated keys
+    if keys.containsOrIncl(fieldName):
+      let err = try: fmt"Multiple `{fieldName}` fields found"
+                except CatchableError: "Multiple fields with the same name found"
+      reader.raiseUnexpectedField(err, "FilterWakuMessage")
+
+    case fieldName
+    of "buffer":
+      buffer = some(reader.readValue(array[MessageNametagBufferSize, MessageNametag]))
+    of "counter":
+      counter = some(reader.readValue(uint64))
+    of "secret":
+      secret = some(reader.readValue(array[MessageNametagSecretLength, byte]))
+    else:
+      unrecognizedFieldWarning()
+
+  value = MessageNametagBuffer(
+    buffer: buffer.get(),
+    counter: counter.get(),
+    secret: secret,
+  )
+
+proc readValue*(reader: var JsonReader[RestJson], value: var MDigest[256])
+    {.raises: [SerializationError, IOError].} =
+  var
+    data = none(array[256 div 8, byte])
+  var keys = initHashSet[string]()
+  for fieldName in readObjectFields(reader):
+    if keys.containsOrIncl(fieldName):
+      let err = try: fmt"Multiple `{fieldName}` fields found"
+                except CatchableError: "Multiple fields with the same name found"
+      reader.raiseUnexpectedField(err, "FilterWakuMessage")
+
+    case fieldName
+    of "data":
+      data = some(reader.readValue(array[256 div 8, byte]))
+    else:
+      unrecognizedFieldWarning()
+
+  value = MDigest[256](
+    data: data.get(),
+  )
 
 proc jsonResponsePlain*(t: typedesc[RestApiResponse],
                         data: auto): RestApiResponse =
