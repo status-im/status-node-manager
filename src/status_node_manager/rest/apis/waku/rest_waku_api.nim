@@ -2,13 +2,18 @@ import
   # Nimble packages
   chronicles,
   presto/[route, segpath, server],
+  stew/io2,
   serialization, json_serialization,
+  waku/waku_noise/noise_types,
 
   # Local packages
   ./types,
   ../../[rest_constants, rest_serialization],
   ../../../waku,
+  ../../../filepaths,
   ../../../../../libs/waku_utils/waku_pair
+
+from confutils import OutFile, `$`
 
 proc wakuApiError(status: HttpCode, msg: string): RestApiResponse =
   let data =
@@ -55,3 +60,26 @@ proc installWakuApiHandlers*(router: var RestRouter,
     except:
       return wakuApiError(Http500, "Internal Server Error")
 
+  router.api(MethodPost, "/waku/export/handshake"
+      ) do (contentBody: Option[ContentBody]) -> RestApiResponse:
+    let wakuHandshakeExportData =
+      block:
+        if contentBody.isNone():
+          return wakuApiError(Http404, EmptyRequestBodyError)
+        let dres = decodeBody(WakuExportHandshakeRequestData, contentBody.get())
+
+        if dres.isErr():
+           return wakuApiError(Http400, InvalidWakuExportHandshakeObjects)
+        dres.get()
+    let exportFile = OutFile(wakuHandshakeExportData.exportFile)
+    try:
+      let saveHandshakeRes = saveHandshakeData(wakuHost.wakuHandshake,
+                                               exportFile)
+      if saveHandshakeRes.isOk():
+        notice "Waku Handshake Export successful! Request fulfilled."
+        return RestApiResponse.response($saveHandshakeRes.get(),
+                                        Http200, "application/json")
+      else:
+        return wakuApiError(Http500, saveHandshakeRes.error())
+    except:
+      return wakuApiError(Http500, "Internal Server Error")
