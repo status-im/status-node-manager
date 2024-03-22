@@ -18,6 +18,7 @@ import
   ../libs/waku_utils/waku_node
 
 type SNM* = ref object
+  config: StatusNodeManagerConfig
   restServer*: RestServerRef
   wakuHost*: ref WakuHost
 
@@ -39,12 +40,20 @@ proc init*(T: type SNM,
   else:
     nil
 
-  SNM(restServer: restServer,
+  SNM(config: config,
+      restServer: restServer,
       wakuHost: newClone wakuHost)
 
 proc stop(snm: SNM) =
   snmStatus = SNMStatus.Stopping
   notice "Graceful shutdown"
+
+  let wakuHandshakeFile = OutFile(snm.config.wakuHandshakeFile)
+  let saveRes = saveHandshakeData(snm.wakuHost.wakuHandshake, wakuHandshakeFile)
+  if saveRes.isOk():
+    notice "Waku handshake data saved to file", path = $saveRes.get
+  else:
+    warn "Failed to save handshake data to file", reason = saveRes.error()
 
 proc installRestHandlers(restServer: RestServerRef, snm: SNM) =
   restServer.router.installWakuApiHandlers(snm.wakuHost)
