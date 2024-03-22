@@ -67,6 +67,20 @@ proc doRunStatusNodeManager*(config: StatusNodeManagerConfig,
                              rng: ref HmacDrbgContext) =
   notice "Starting Status Node Manager"
 
+  ## Ctrl+C handling
+  proc controlCHandler() {.noconv.} =
+    when defined(windows):
+      # workaround for https://github.com/nim-lang/Nim/issues/4057
+      try:
+        setupForeignThreadGc()
+      except Exception as exc: raiseAssert exc.msg # shouldn't happen
+    notice "Shutting down after having received SIGINT"
+    snmStatus = SNMStatus.Stopping
+  try:
+    setControlCHook(controlCHandler)
+  except Exception as exc: # TODO Exception
+    warn "Cannot set ctrl-c handler", msg = exc.msg
+
   let snm = waitFor SNM.init(rng, config)
   waitFor snm.run()
 
