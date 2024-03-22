@@ -11,29 +11,35 @@ import
   metrics,
   results,
   serialization, json_serialization,
-  stew/io2,
+  stew/io2, stew/byteutils,
 
   # Nimble packages - Waku
   waku/node/waku_node,
+  waku/utils/noise,
   waku/waku_noise/noise_types,
+  waku/waku_noise/noise_handshake_processing,
 
   # Local modules
   ../libs/waku_utils/waku_node,
+  ../libs/waku_utils/waku_handshake_utils,
+  ./config,
   ./rest/rest_serialization,
   ./filepaths
+
 
 from confutils import OutFile, `$`
 
 type
-  WakuNodeParams* = object
-    wakuPort*: uint16
-    discv5Port*: uint16
-    requiredConnectedPeers*: int
+  # WakuNodeParams* = object
+  #   wakuPort*: uint16
+  #   discv5Port*: uint16
+  #   requiredConnectedPeers*: int
 
   WakuHost* = object
     rng*: ref HmacDrbgContext
     wakuNode*: WakuNode
     wakuHandshake*: HandshakeResult
+    contentTopic*: string
 
 proc saveHandshakeData*(handshakeResult: HandshakeResult,
                         handshakeDataFile: OutFile): Result[OutFile, string] =
@@ -94,16 +100,31 @@ proc loadHandshakeData*(handshakeDataFile: OutFile
 
   ok(handshakeResult.get)
 
+proc wakuSendMessage*(wakuHost: ref WakuHost, message: string): Result[void, string] =
+
+  let
+    message1 = toBytes(message)
+    payload1 = writeMessage(wakuHost.wakuHandshake, message1,
+                            wakuHost.wakuHandshake.nametagsOutbound)
+    wakuMessage1 = encodePayloadV2(payload1, wakuHost.contentTopic)
+
+  discard wakuHost.wakuNode.publish(some("/waku/2/default-waku/proto"), wakuMessage1.get)
+  ok()
+
 proc init*(T: type WakuHost,
            rng: ref HmacDrbgContext,
-           wakuNodeParams: WakuNodeParams,
-           wakuHandshakeFile: string): Future[WakuHost] {.async.}=
-  let node = await startWakuNode(rng, wakuNodeParams.wakuPort,
-                                 wakuNodeParams.discv5Port,
-                                 wakuNodeParams.requiredConnectedPeers)
-  let handshakeDataFile = OutFile(wakuHandshakeFile)
+           config: StatusNodeManagerConfig): Future[WakuHost] {.async.}=
+
+  # let wakuNodeParams = WakuNodeParams(wakuPort: config.wakuPort,
+  #                                     discv5Port: config.discv5Port,
+  #                                     requiredConnectedPeers: config.requiredConnectedPeers)
+  # let wakuHandshakeFile = config.wakuHandshakeFile
+  let node = await startWakuNode(rng, config.wakuPort,
+                                 config.discv5Port,
+                                 config.requiredConnectedPeers)
 
   # Try to load handshake data from file, if the file exists
+  let handshakeDataFile = OutFile(config.wakuHandshakeFile)
   let wakuHandshake =
     block:
       let loadRes = loadHandshakeData(handshakeDataFile)
@@ -113,7 +134,8 @@ proc init*(T: type WakuHost,
       else:
         warn "Could not load waku handshake data from file", reason = loadRes.error()
         HandshakeResult()
+
   T(rng: rng,
     wakuNode: node,
-    wakuHandshake: wakuHandshake
+    wakuHandshake: wakuHandshake,
     )

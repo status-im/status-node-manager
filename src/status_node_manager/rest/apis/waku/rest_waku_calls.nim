@@ -18,6 +18,10 @@ proc wakuExportHandshakePlain*(body: WakuExportHandshakeRequestData): RestPlainR
     rest, endpoint: "/waku/export/handshake",
     meth: MethodPost.}
 
+proc wakuSendMessagePlain*(body: WakuSendMessageRequestData): RestPlainResponse {.
+    rest, endpoint: "/waku/send",
+    meth: MethodPost.}
+
 proc wakuPair*(client: RestClientRef, wakuPairData: WakuPairRequestData) {.async.} =
   notice "Initiating Waku Pair request..."
   let
@@ -43,5 +47,19 @@ proc wakuExportHandshake*(client : RestClientRef,
     notice "Waku Handshake Export request successful", exportedFile=respMsg
   of 400, 401, 403, 404, 500:
     fatal "Waku Handshake Export request failed", status=resp.status, body=respMsg
+  else:
+    raiseUnknownStatusError(resp)
+
+proc wakuSendMessage*(client: RestClientRef,
+                      wakuSendMessageData: WakuSendMessageRequestData) {.async.} =
+  notice "Initiating Waku Send Message request..."
+  let
+    resp = await client.wakuSendMessagePlain(wakuSendMessageData)
+    respMsg = string.fromBytes(resp.data)
+  case resp.status:
+  of 200:
+    notice "Waku Send Message request successful", body=respMsg
+  of 400, 401, 403, 404, 500:
+    notice "Waku Send Message request failed", status=resp.status, body=respMsg
   else:
     raiseUnknownStatusError(resp)

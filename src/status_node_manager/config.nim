@@ -21,7 +21,8 @@ type
 
   WakuCommand* {.pure.} = enum
     pair,
-    exportHandshake
+    exportHandshake,
+    send
 
 type
   StatusNodeManagerConfig* = object
@@ -114,6 +115,11 @@ type
           desc: "The file to export the waku handshake result to"
           defaultValue: config.defaultWakuHandshakeFilePath()
           name: "handshake-file" .}: OutFile
+
+      of WakuCommand.send:
+        message* {.
+          desc: "The message to send"
+          name: "message" .}: string
 
 proc defaultDataDir*[Conf](config: Conf): string =
   let dataDir = when defined(windows):

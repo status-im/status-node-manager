@@ -26,11 +26,11 @@ proc init*(T: type SNM,
            rng: ref HmacDrbgContext,
            config: StatusNodeManagerConfig): Future[SNM] {.async.} =
   # Waku node setup
-  let wakuNodeParams = WakuNodeParams(wakuPort: config.wakuPort,
-                                      discv5Port: config.discv5Port,
-                                      requiredConnectedPeers: config.requiredConnectedPeers)
-  let wakuHandshakeFile = config.wakuHandshakeFile
-  let wakuHost = await WakuHost.init(rng, wakuNodeParams, wakuHandshakeFile)
+  # let wakuNodeParams = WakuNodeParams(wakuPort: config.wakuPort,
+  #                                     discv5Port: config.discv5Port,
+  #                                     requiredConnectedPeers: config.requiredConnectedPeers)
+  # let wakuHandshakeFile = config.wakuHandshakeFile
+  let wakuHost = await WakuHost.init(rng, config)
 
   # Rest server setup
   let restServer = if config.restEnabled:
@@ -111,6 +111,14 @@ proc doWakuHandshakeExport(config: StatusNodeManagerConfig,
     WakuExportHandshakeRequestData(exportFile: $config.handshakeFile)
   waitFor wakuExportHandshake(wakuClient, requestData)
 
+proc doWakuSendMessage(config: StatusNodeManagerConfig,
+                       wakuClient: var RestClientRef) =
+  let requestData = WakuSendMessageRequestData(
+    message: config.message
+  )
+
+  waitFor wakuSendMessage(wakuClient, requestData)
+
 proc doWakuCommand(config: StatusNodeManagerConfig, rng: ref HmacDrbgContext) =
   var wakuClient = RestClientRef.new(initTAddress(config.restAddress,
                                                   config.restPort))
@@ -119,6 +127,8 @@ proc doWakuCommand(config: StatusNodeManagerConfig, rng: ref HmacDrbgContext) =
     doWakuPairing(config, rng, wakuClient)
   of WakuCommand.exportHandshake:
     doWakuHandshakeExport(config, wakuClient)
+  of WakuCommand.send:
+    doWakuSendMessage(config, wakuClient)
 
 when isMainModule:
   setupLogLevel(LogLevel.NOTICE)
