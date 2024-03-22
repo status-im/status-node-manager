@@ -86,6 +86,11 @@ type
         defaultValue: 2
         name: "required-connected-peers" .}: int
 
+      wakuHandshakeFile* {.
+        desc: "The file to read & write the waku handshake data"
+        defaultValue: config.defaultWakuHandshakeFilePath()
+        name: "waku-handshake-file" .}: string
+
     of SNMStartUpCmd.waku:
       case wakuCmd* {.command.}: WakuCommand
 
@@ -107,7 +112,7 @@ type
       of WakuCommand.exportHandshake:
         handshakeFile* {.
           desc: "The file to export the waku handshake result to"
-          defaultValue: config.defaultDataDir() / "waku" / wakuHandshakeDataFilename
+          defaultValue: config.defaultWakuHandshakeFilePath()
           name: "handshake-file" .}: OutFile
 
 proc defaultDataDir*[Conf](config: Conf): string =
@@ -119,3 +124,6 @@ proc defaultDataDir*[Conf](config: Conf): string =
     ".cache" / "StatusNodeManager"
 
   getHomeDir() / dataDir
+
+proc defaultWakuHandshakeFilePath*[Conf](config: Conf): string =
+  config.defaultDataDir() / "waku" / wakuHandshakeDataFilename
