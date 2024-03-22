@@ -96,9 +96,24 @@ proc loadHandshakeData*(handshakeDataFile: OutFile
 
 proc init*(T: type WakuHost,
            rng: ref HmacDrbgContext,
-           wakuNodeParams: WakuNodeParams): Future[WakuHost] {.async.}=
+           wakuNodeParams: WakuNodeParams,
+           wakuHandshakeFile: string): Future[WakuHost] {.async.}=
   let node = await startWakuNode(rng, wakuNodeParams.wakuPort,
                                  wakuNodeParams.discv5Port,
                                  wakuNodeParams.requiredConnectedPeers)
+  let handshakeDataFile = OutFile(wakuHandshakeFile)
+
+  # Try to load handshake data from file, if the file exists
+  let wakuHandshake =
+    block:
+      let loadRes = loadHandshakeData(handshakeDataFile)
+      if loadRes.isOk:
+        notice "Loaded waku handshake data from file", file = handshakeDataFile
+        loadRes.get
+      else:
+        warn "Could not load waku handshake data from file", reason = loadRes.error()
+        HandshakeResult()
   T(rng: rng,
-    wakuNode: node)
+    wakuNode: node,
+    wakuHandshake: wakuHandshake
+    )

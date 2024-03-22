@@ -28,7 +28,8 @@ proc init*(T: type SNM,
   let wakuNodeParams = WakuNodeParams(wakuPort: config.wakuPort,
                                       discv5Port: config.discv5Port,
                                       requiredConnectedPeers: config.requiredConnectedPeers)
-  let wakuHost = await WakuHost.init(rng, wakuNodeParams)
+  let wakuHandshakeFile = config.wakuHandshakeFile
+  let wakuHost = await WakuHost.init(rng, wakuNodeParams, wakuHandshakeFile)
 
   # Rest server setup
   let restServer = if config.restEnabled:
