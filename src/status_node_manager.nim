@@ -26,11 +26,7 @@ proc init*(T: type SNM,
            rng: ref HmacDrbgContext,
            config: StatusNodeManagerConfig): Future[SNM] {.async.} =
   # Waku node setup
-  let wakuNodeParams = WakuNodeParams(wakuPort: config.wakuPort,
-                                      discv5Port: config.discv5Port,
-                                      requiredConnectedPeers: config.requiredConnectedPeers)
-  let wakuHandshakeFile = config.wakuHandshakeFile
-  let wakuHost = await WakuHost.init(rng, wakuNodeParams, wakuHandshakeFile)
+  let wakuHost = await WakuHost.init(rng, config)
 
   # Rest server setup
   let restServer = if config.restEnabled:
