@@ -20,16 +20,12 @@ import
   # Local modules
   ../libs/waku_utils/waku_node,
   ./rest/rest_serialization,
+  ./config,
   ./filepaths
 
 from confutils import OutFile, `$`
 
 type
-  WakuNodeParams* = object
-    wakuPort*: uint16
-    discv5Port*: uint16
-    requiredConnectedPeers*: int
-
   WakuHost* = object
     rng*: ref HmacDrbgContext
     wakuNode*: WakuNode
@@ -96,14 +92,13 @@ proc loadHandshakeData*(handshakeDataFile: OutFile
 
 proc init*(T: type WakuHost,
            rng: ref HmacDrbgContext,
-           wakuNodeParams: WakuNodeParams,
-           wakuHandshakeFile: string): Future[WakuHost] {.async.}=
-  let node = await startWakuNode(rng, wakuNodeParams.wakuPort,
-                                 wakuNodeParams.discv5Port,
-                                 wakuNodeParams.requiredConnectedPeers)
-  let handshakeDataFile = OutFile(wakuHandshakeFile)
+           config: StatusNodeManagerConfig): Future[WakuHost] {.async.} =
+  let node = await startWakuNode(rng, config.wakuPort,
+                                 config.discv5Port,
+                                 config.requiredConnectedPeers)
 
   # Try to load handshake data from file, if the file exists
+  let handshakeDataFile = OutFile(config.wakuHandshakeFile)
   let wakuHandshake =
     block:
       let loadRes = loadHandshakeData(handshakeDataFile)
@@ -113,6 +108,7 @@ proc init*(T: type WakuHost,
       else:
         warn "Could not load waku handshake data from file", reason = loadRes.error()
         HandshakeResult()
+
   T(rng: rng,
     wakuNode: node,
     wakuHandshake: wakuHandshake
