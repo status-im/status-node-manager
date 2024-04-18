@@ -120,6 +120,8 @@ proc doWakuCommand(config: StatusNodeManagerConfig, rng: ref HmacDrbgContext) =
     doWakuPairing(config, rng, wakuClient)
   of WakuCommand.exportHandshake:
     doWakuHandshakeExport(config, wakuClient)
+  of WakuCommand.sendMessage:
+    discard
 
 when isMainModule:
   setupLogLevel(LogLevel.NOTICE)
