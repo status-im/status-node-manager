@@ -18,6 +18,7 @@ import
 type WakuPairResult* = object
   wakuNode*: WakuNode
   wakuHandshakeResult*: HandshakeResult
+  contentTopic*: string
 
 proc wakuPair*(rng: ref HmacDrbgContext,
                node: WakuNode,
@@ -46,4 +47,5 @@ proc wakuPair*(rng: ref HmacDrbgContext,
                                                qrMessageNameTag,
                                                initiatorInfo)
   return WakuPairResult(wakuNode: node,
-                        wakuHandshakeResult: initiatorHSResult)
+                        wakuHandshakeResult: initiatorHSResult,
+                        contentTopic: contentTopic)

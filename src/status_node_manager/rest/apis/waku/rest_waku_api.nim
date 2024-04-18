@@ -54,6 +54,11 @@ proc installWakuApiHandlers*(router: var RestRouter,
 
       wakuHost.wakuNode = wakuPairResult.wakuNode
       wakuHost.wakuHandshake = wakuPairResult.wakuHandshakeResult
+      wakuHost.pubSubTopic = wakuPairData.pubSubTopic
+      wakuHost.contentTopic = wakuPairResult.contentTopic
+
+      notice "After pairing pubSubTopic updated: ", pubSubTopic = wakuHost.pubSubTopic
+      notice "After pairing contentTopic updated: ", contentTopic = wakuHost.contentTopic
 
       notice "Waku pairing successful! Request fulfilled."
       return RestApiResponse.response("Successful pairing", Http200, "application/json")

@@ -93,10 +93,15 @@ proc doRunStatusNodeManager*(config: StatusNodeManagerConfig,
 proc doWakuPairing(config: StatusNodeManagerConfig,
                    rng: ref HmacDrbgContext,
                    wakuClient: var RestClientRef) =
+  let pubsubTopic = if config.pubsubTopic.isSome:
+    config.pubsubTopic.get
+  else:
+    defaultWakuPubsubTopic
+
   let wakuPairRequestData = WakuPairRequestData(
     qr: config.qr,
     qrMessageNameTag: config.qrMessageNameTag,
-    pubSubTopic: config.pubSubTopic
+    pubSubTopic: pubSubTopic
   )
 
   waitFor wakuPair(wakuClient, wakuPairRequestData)
