@@ -15,6 +15,7 @@ import
 
   # Nimble packages - Waku
   waku/node/waku_node,
+  waku/waku_core,
   waku/waku_noise/noise_types,
 
   # Local modules
@@ -30,6 +31,8 @@ type
     rng*: ref HmacDrbgContext
     wakuNode*: WakuNode
     wakuHandshake*: HandshakeResult
+    pubsubTopic*: PubsubTopic
+    contentTopic*: string
 
 proc saveHandshakeData*(handshakeResult: HandshakeResult,
                         handshakeDataFile: OutFile): Result[OutFile, string] =
@@ -111,5 +114,7 @@ proc init*(T: type WakuHost,
 
   T(rng: rng,
     wakuNode: node,
-    wakuHandshake: wakuHandshake
+    wakuHandshake: wakuHandshake,
+    contentTopic: defaultWakuContentTopic,
+    pubsubTopic: defaultWakuPubsubTopic
     )

@@ -13,6 +13,8 @@ export
   parseCmdArg, completeCmdArg, `/`
 
 const wakuHandshakeDataFilename* = "handshake_data.json"
+const defaultWakuContentTopic* = "/snm/0.0.1/default/proto"
+const defaultWakuPubsubTopic* = "/waku/2/default-waku/proto"
 
 type
   SNMStartUpCmd* {.pure.} = enum
@@ -106,8 +108,7 @@ type
 
         pubSubTopic* {.
           desc: "The topic to subscribe to"
-          defaultValue: "/waku/2/default-waku/proto"
-          name: "pubsub-topic" .}: PubsubTopic
+          name: "pubsub-topic" .}: Option[PubsubTopic]
 
       of WakuCommand.exportHandshake:
         handshakeFile* {.
