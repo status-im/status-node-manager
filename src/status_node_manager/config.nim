@@ -1,4 +1,6 @@
 import
+  # Standard library
+  std/[options],
   # Nimble packages
   confutils/defs, confutils/std/net,
   waku/waku_core,
@@ -23,7 +25,8 @@ type
 
   WakuCommand* {.pure.} = enum
     pair,
-    exportHandshake
+    exportHandshake,
+    sendMessage
 
 type
   StatusNodeManagerConfig* = object
@@ -115,6 +118,15 @@ type
           desc: "The file to export the waku handshake result to"
           defaultValue: config.defaultWakuHandshakeFilePath()
           name: "handshake-file" .}: OutFile
+
+      of WakuCommand.sendMessage:
+        message* {.
+          desc: "The message to send"
+          name: "message" .}: string
+
+        contentTopic* {.
+          desc: "The topic to send the message to"
+          name: "content-topic" .}: Option[string]
 
 proc defaultDataDir*[Conf](config: Conf): string =
   let dataDir = when defined(windows):
