@@ -7,3 +7,7 @@ type WakuPairRequestData* = object
 
 type WakuExportHandshakeRequestData* = object
   exportFile*: string
+
+type WakuSendMessageRequestData* = object
+  message*: string
+  contentTopic*: string

@@ -7,3 +7,5 @@ const
     "Invalid Waku export handshake objects found"
   WakuHandshakeFileExportError* =
     "Waku handshake file export failed"
+  InvalidWakuSendMessageObjects* =
+    "Invalid Waku send message objects found"
