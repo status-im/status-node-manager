@@ -112,6 +112,20 @@ proc doWakuHandshakeExport(config: StatusNodeManagerConfig,
     WakuExportHandshakeRequestData(exportFile: $config.handshakeFile)
   waitFor wakuExportHandshake(wakuClient, requestData)
 
+proc doWakuSendMessage(config: StatusNodeManagerConfig,
+                       wakuClient: var RestClientRef) =
+  let contentTopic = if config.contentTopic.isSome:
+    config.contentTopic.get
+  else:
+    defaultWakuContentTopic
+
+  let requestData = WakuSendMessageRequestData(
+    message: config.message,
+    contentTopic: contentTopic
+  )
+
+  waitFor wakuSendMessage(wakuClient, requestData)
+
 proc doWakuCommand(config: StatusNodeManagerConfig, rng: ref HmacDrbgContext) =
   var wakuClient = RestClientRef.new(initTAddress(config.restAddress,
                                                   config.restPort))
@@ -121,7 +135,7 @@ proc doWakuCommand(config: StatusNodeManagerConfig, rng: ref HmacDrbgContext) =
   of WakuCommand.exportHandshake:
     doWakuHandshakeExport(config, wakuClient)
   of WakuCommand.sendMessage:
-    discard
+    doWakuSendMessage(config, wakuClient)
 
 when isMainModule:
   setupLogLevel(LogLevel.NOTICE)
