@@ -20,8 +20,9 @@ import
 
   # Local modules
   ../libs/waku_utils/waku_node,
-  ./rest/rest_serialization,
+  ../libs/waku_utils/waku_messages,
   ./config,
+  ./rest/rest_serialization,
   ./filepaths
 
 from confutils import OutFile, `$`
@@ -92,6 +93,26 @@ proc loadHandshakeData*(handshakeDataFile: OutFile
     return err("Waku handshake data file is empty. New pairing is required")
 
   ok(handshakeResult.get)
+
+proc wakuSendMessage*(wakuHost: ref WakuHost,
+                      message: string,
+                      contentTopic: string): Future[Result[void, string]] {.async.} =
+  let wakuMessage = prepareMessageWithHandshake(message, contentTopic,
+                                                wakuHost.wakuHandshake)
+  if wakuMessage.isErr:
+    error "Failed to prepare message", error = wakuMessage.error
+    return err("Failed to prepare message. Reason: " & $wakuMessage.error)
+
+  let res = await wakuHost.wakuNode.publish(some(wakuHost.pubsubTopic),
+                                            wakuMessage.get)
+
+  if res.isOk:
+    notice "Published message", message = message, pubSubTopic = wakuHost.pubSubTopic,
+        contentTopic = contentTopic
+    return ok()
+  else:
+    error "Failed to publish message", error = res.error
+    return err("Failed to publish message. Reason: " & res.error)
 
 proc init*(T: type WakuHost,
            rng: ref HmacDrbgContext,
