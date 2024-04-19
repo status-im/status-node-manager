@@ -4,13 +4,11 @@ import
   presto/[route, segpath, server],
   stew/io2,
   serialization, json_serialization,
-  waku/waku_noise/noise_types,
 
   # Local packages
   ./types,
   ../../[rest_constants, rest_serialization],
   ../../../waku,
-  ../../../filepaths,
   ../../../../../libs/waku_utils/waku_pair
 
 from confutils import OutFile, `$`
@@ -86,5 +84,27 @@ proc installWakuApiHandlers*(router: var RestRouter,
                                         Http200, "application/json")
       else:
         return wakuApiError(Http500, saveHandshakeRes.error())
+    except:
+      return wakuApiError(Http500, "Internal Server Error")
+
+  router.api(MethodPost, "/waku/send"
+      ) do (contentBody: Option[ContentBody]) -> RestApiResponse:
+    let wakuSendMessageData =
+      block:
+        if contentBody.isNone():
+          return wakuApiError(Http404, EmptyRequestBodyError)
+        let dres = decodeBody(WakuSendMessageRequestData, contentBody.get())
+
+        if dres.isErr():
+           return wakuApiError(Http400, InvalidWakuSendMessageObjects)
+        dres.get()
+    try:
+      let wakuSendResult = wakuSendMessage(wakuHost,
+                                           wakuSendMessageData.message,
+                                           wakuSendMessageData.contentTopic)
+
+      notice "Waku message sent successfully! Request fulfilled."
+      return RestApiResponse.response("Message sent successfully",
+                                      Http200, "application/json")
     except:
       return wakuApiError(Http500, "Internal Server Error")
