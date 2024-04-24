@@ -43,7 +43,7 @@ clean: | clean-libbacktrace
 .PHONY: librln
 
 LIBRLN_BUILDDIR := $(CURDIR)/vendor/zerokit
-LIBRLN_VERSION := v0.3.4
+LIBRLN_VERSION := v0.3.7
 
 ifeq ($(OS),Windows_NT)
 LIBRLN_FILE := rln.lib
