@@ -17,6 +17,13 @@ export
 const wakuHandshakeDataFilename* = "handshake_data.json"
 const defaultWakuContentTopic* = "/snm/0.0.1/default/proto"
 const defaultWakuPubsubTopic* = "/waku/2/default-waku/proto"
+const defaultWakuBootstrapNode* = "enr:-P-4QGVNANzbhCI49du6Moyw98AjuMhKoOpE_Jges9JlCq-I" &
+                                  "CAVadktjfcNpuhQgT0g1cu86_S3nbM7eYkCsqDAQG7UBgmlkgnY0" &
+                                  "gmlwhI_G-a6KbXVsdGlhZGRyc7hgAC02KG5vZGUtMDEuZG8tYW1z" &
+                                  "My5zdGF0dXMucHJvZC5zdGF0dXNpbS5uZXQGdl8ALzYobm9kZS0w" &
+                                  "MS5kby1hbXMzLnN0YXR1cy5wcm9kLnN0YXR1c2ltLm5ldAYBu94D" &
+                                  "iXNlY3AyNTZrMaECoVyonsTGEQvVioM562Q1fjzTb_vKD152PPId" &
+                                  "sV7sM6SDdGNwgnZfg3VkcIIjKIV3YWt1Mg8"
 
 type
   SNMStartUpCmd* {.pure.} = enum
@@ -95,6 +102,11 @@ type
         desc: "The file to read & write the waku handshake data"
         defaultValue: config.defaultWakuHandshakeFilePath()
         name: "waku-handshake-file" .}: string
+
+      wakuBootstrapNode* {.
+        desc: "The bootstrap node to use for the Waku node"
+        defaultValue: defaultWakuBootstrapNode
+        name: "waku-bootstrap-node" .}: string
 
     of SNMStartUpCmd.waku:
       case wakuCmd* {.command.}: WakuCommand

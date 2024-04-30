@@ -15,7 +15,8 @@ import
 
   # Local modules
   ../../waku_handshake_utils,
-  ../../waku_node
+  ../../waku_node,
+  ../constants
 
 const
   wakuPort = 50000
@@ -61,7 +62,8 @@ proc exampleNwakuAgentB(rng: ref HmacDrbgContext) {.async.} =
 
   # Start nwaku instance
   let node = await startWakuNode(rng, wakuPort, discv5Port,
-                                 requiredConnectedPeers)
+                                 requiredConnectedPeers,
+                                 defaultWakuBootstrapNode)
 
   # Make sure it matches the publisher. Use default value
   # see spec: https://rfc.vac.dev/spec/23/
