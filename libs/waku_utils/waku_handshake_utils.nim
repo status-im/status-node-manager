@@ -47,7 +47,7 @@ proc initContentTopicFromQr*(qr: string): ContentTopic =
   let (readApplicationName, readApplicationVersion, readShardId, _, _) = fromQr(qr)
 
   let contentTopic = "/" & readApplicationName & "/" &
-                     readApplicationVersion & "/wakunoise/1/sessions_shard-" &
+                     readApplicationVersion & "/" &
                      readShardId & "/proto"
   return contentTopic
 
