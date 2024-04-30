@@ -117,9 +117,11 @@ proc wakuSendMessage*(wakuHost: ref WakuHost,
 proc init*(T: type WakuHost,
            rng: ref HmacDrbgContext,
            config: StatusNodeManagerConfig): Future[WakuHost] {.async.} =
+
   let node = await startWakuNode(rng, config.wakuPort,
                                  config.discv5Port,
-                                 config.requiredConnectedPeers)
+                                 config.requiredConnectedPeers,
+                                 config.wakuBootstrapNode)
 
   # Try to load handshake data from file, if the file exists
   let handshakeDataFile = OutFile(config.wakuHandshakeFile)

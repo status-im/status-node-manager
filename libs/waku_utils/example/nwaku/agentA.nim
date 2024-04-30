@@ -15,7 +15,8 @@ import
 
   # Local modules
   ../../waku_handshake_utils,
-  ../../waku_node
+  ../../waku_node,
+  ../constants
 
 const
   wakuPort = 60000
@@ -47,7 +48,8 @@ proc exampleNwakuAgentA(rng: ref HmacDrbgContext) {.async.} =
 
   # Start nwaku instance
   let node = await startWakuNode(rng, wakuPort, discv5Port,
-                                 requiredConnectedPeers)
+                                 requiredConnectedPeers,
+                                 defaultWakuBootstrapNode)
 
   # Perform the handshake
   agentAHSResult = await initiatorHandshake(rng, node, pubSubTopic, contentTopic,
