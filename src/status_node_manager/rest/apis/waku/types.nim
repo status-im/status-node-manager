@@ -11,3 +11,4 @@ type WakuExportHandshakeRequestData* = object
 type WakuSendMessageRequestData* = object
   message*: string
   contentTopic*: string
+  noise*: bool
