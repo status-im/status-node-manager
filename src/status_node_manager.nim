@@ -119,9 +119,15 @@ proc doWakuSendMessage(config: StatusNodeManagerConfig,
   else:
     defaultWakuContentTopic
 
+  let noise = if config.noise.isSome:
+    config.noise.get
+  else:
+    false
+
   let requestData = WakuSendMessageRequestData(
     message: config.message,
-    contentTopic: contentTopic
+    contentTopic: contentTopic,
+    noise: noise
   )
 
   waitFor wakuSendMessage(wakuClient, requestData)

@@ -101,7 +101,8 @@ proc installWakuApiHandlers*(router: var RestRouter,
     try:
       let wakuSendResult = wakuSendMessage(wakuHost,
                                            wakuSendMessageData.message,
-                                           wakuSendMessageData.contentTopic)
+                                           wakuSendMessageData.contentTopic,
+                                           wakuSendMessageData.noise)
 
       notice "Waku message sent successfully! Request fulfilled."
       return RestApiResponse.response("Message sent successfully",
