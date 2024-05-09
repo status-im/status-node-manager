@@ -140,6 +140,10 @@ type
           desc: "The topic to send the message to"
           name: "content-topic" .}: Option[string]
 
+        noise* {.
+          desc: "The noise to add to the message"
+          name: "noise" .}: Option[bool]
+
 proc defaultDataDir*[Conf](config: Conf): string =
   let dataDir = when defined(windows):
     "AppData" / "Roaming" / "StatusNodeManager"
