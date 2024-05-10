@@ -11,7 +11,7 @@ import
   metrics,
   results,
   serialization, json_serialization,
-  stew/io2,
+  stew/[io2, byteutils],
 
   # Nimble packages - Waku
   waku/node/waku_node,
@@ -19,6 +19,7 @@ import
   waku/waku_noise/noise_types,
 
   # Local modules
+  ../libs/waku_utils/utils,
   ../libs/waku_utils/waku_node,
   ../libs/waku_utils/waku_messages,
   ./config,
@@ -96,9 +97,17 @@ proc loadHandshakeData*(handshakeDataFile: OutFile
 
 proc wakuSendMessage*(wakuHost: ref WakuHost,
                       message: string,
-                      contentTopic: string): Future[Result[void, string]] {.async.} =
-  let wakuMessage = prepareMessageWithHandshake(message, contentTopic,
-                                                wakuHost.wakuHandshake)
+                      contentTopic: string,
+                      noise: bool = false): Future[Result[void, string]] {.async.} =
+  # Use Content topic from wakuHost if sending noise message
+  let ct = if noise: wakuHost.contentTopic else: contentTopic
+  let wakuMessage =
+    if noise:
+      prepareMessageWithHandshake(message, ct,
+                                  wakuHost.wakuHandshake)
+    else:
+      prepareMessage(message, ct)
+
   if wakuMessage.isErr:
     error "Failed to prepare message", error = wakuMessage.error
     return err("Failed to prepare message. Reason: " & $wakuMessage.error)
@@ -108,7 +117,7 @@ proc wakuSendMessage*(wakuHost: ref WakuHost,
 
   if res.isOk:
     notice "Published message", message = message, pubSubTopic = wakuHost.pubSubTopic,
-        contentTopic = contentTopic
+        contentTopic = ct
     return ok()
   else:
     error "Failed to publish message", error = res.error
