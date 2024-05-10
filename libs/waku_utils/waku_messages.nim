@@ -12,7 +12,20 @@ import
   waku/waku_core,
   waku/utils/noise,
   waku/waku_noise/noise_types,
-  waku/waku_noise/noise_handshake_processing
+  waku/waku_noise/noise_handshake_processing,
+
+  # Local modules
+  ./utils
+
+proc prepareMessage*(message: string, contentTopic: string): Result[WakuMessage, cstring] =
+  let
+    payload = toBytes(message)
+    msg = WakuMessage(payload: toBytes(message),
+                      contentTopic: contentTopic,
+                      ephemeral: true,
+                      timestamp: now())
+
+  ok(msg)
 
 proc prepareMessageWithHandshake*(message: string,
                                   contentTopic: string,
